@@ -1,0 +1,84 @@
+generated: '2026-08-01'
+method: searched
+source: https://api.morningconsult.com/docs/#rate-limits
+api: morning-consult:morning-consult-api
+summary: >-
+  Morning Consult meters the API in named buckets. Endpoints sharing a bucket draw on
+  the same counter; different buckets are metered separately. Unless noted, limits are
+  per-minute and the window resets 60 seconds after the first request in it.
+signaling:
+  style: headers
+  headers:
+  - name: X-Rate-Limit-Limit
+    description: The rate limit maximum for the current request.
+  - name: X-Rate-Limit-Remaining
+    description: The number of requests left in the current period.
+  - name: X-Rate-Limit-Reset
+    description: The time at which the rate limit resets, in UTC epoch milliseconds.
+  exceeded_status: 429
+  example_within_limits: 'HTTP/1.1 200 / X-Rate-Limit-Limit: 200 / X-Rate-Limit-Remaining:
+    179 / X-Rate-Limit-Reset: 1633538752414'
+  example_exceeded: 'HTTP/1.1 429 / X-Rate-Limit-Limit: 200 / X-Rate-Limit-Remaining:
+    0 / X-Rate-Limit-Reset: 1633538752414'
+buckets:
+- bucket: Auth
+  limit_count: 20
+  window: minute
+  notes: >-
+    Credential exchange requests are additionally limited to one per second and 20 per
+    minute per username. Refresh-token requests are limited to 30 per minute.
+  endpoints:
+  - POST /auth/token
+- bucket: Metadata
+  limit_count: 200
+  window: minute
+  endpoints:
+  - GET /data_sources
+  - GET /categories
+  - GET /entities
+  - GET /data_sources/{data_source_id}/countries/{country_code}/questions
+  - GET /data_sources/{data_source_id}/countries/{country_code}/questions/{question_id}
+  - GET /scores
+  - GET /scores/{score_id}/data_sources
+  - GET /responses/bulk/{request_id}
+- bucket: Data
+  limit_count: 200
+  window: minute
+  endpoints:
+  - POST /responses
+  - POST /scores
+- bucket: Data Bridge
+  limit_count: 100
+  window: day
+  notes: Enforced per day (100 requests per 24-hour window) rather than per minute.
+  endpoints:
+  - POST /responses/bulk
+- bucket: AI
+  limit_count: 20
+  window: 5-minutes
+  notes: AI requests are limited to 20 requests per rolling 5-minute window.
+  endpoints:
+  - POST /ai/resolve
+deprecated_buckets:
+- note: >-
+    The legacy /v1/surveys/syndicated/* endpoints (sunset 2026-10-01) carry their own
+    published table with the same bucket names — Auth 20/min, Metadata 200/min,
+    Data 200/min, Data Bridge 100/day for POST /surveys/syndicated/timeseries/batch,
+    and AI 4 for POST /ai/resolve in the deprecated reference.
+  source: https://api.morningconsult.com/docs/#deprecated-rate-limits
+rate_limits:
+- limit_count: 20
+  limit_period: minute
+  name: Auth bucket
+- limit_count: 200
+  limit_period: minute
+  name: Metadata bucket
+- limit_count: 200
+  limit_period: minute
+  name: Data bucket
+- limit_count: 100
+  limit_period: day
+  name: Data Bridge bucket
+- limit_count: 20
+  limit_period: 5-minutes
+  name: AI bucket

@@ -1,0 +1,85 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Morning Consult API
+  version: 1.0.0
+extends: openapi/morning-consult-openapi-original.yml
+x-generated: '2026-08-01'
+x-method: generated
+x-source: >-
+  Derived from the verbatim spec at https://api.morningconsult.com/openapi.yaml plus the
+  published documentation at https://api.morningconsult.com/docs/. Captures API
+  Evangelist annotations without mutating the harvested original.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: morning-consult
+    x-apievangelist-artifacts:
+      authentication: authentication/morning-consult-authentication.yml
+      conventions: conventions/morning-consult-conventions.yml
+      errors: errors/morning-consult-problem-types.yml
+      lifecycle: lifecycle/morning-consult-lifecycle.yml
+      rate_limits: rate-limits/morning-consult-rate-limits.yml
+      data_model: data-model/morning-consult-data-model.yml
+      conformance: conformance/morning-consult-conformance.yml
+      examples: examples/morning-consult-examples.yml
+      skills: skills/_index.yml
+    x-apievangelist-notes: >-
+      HTTP 429 is documented in the published error table and enforced with
+      X-Rate-Limit-* headers, but is not declared as a response on any operation in the
+      original spec. No Sunset/Deprecation response headers are declared even though a
+      dated deprecation policy exists (sunset 2026-10-01).
+- target: $.info
+  update:
+    x-apievangelist-docs: https://api.morningconsult.com/docs/
+    x-apievangelist-support: api-support@morningconsult.com
+- target: $.servers
+  update:
+  - url: https://api.morningconsult.com/v1
+    description: Version 1 API
+    x-apievangelist-spec-url: https://api.morningconsult.com/openapi.yaml
+- target: $.components.securitySchemes.JWT
+  update:
+    x-apievangelist-token-lifetime-seconds: 3600
+    x-apievangelist-obtained-from: POST /auth/token
+- target: $.paths['/responses'].post
+  update:
+    x-apievangelist-rate-limit-bucket: Data
+    x-apievangelist-rate-limit: 200/minute
+- target: $.paths['/scores'].post
+  update:
+    x-apievangelist-rate-limit-bucket: Data
+    x-apievangelist-rate-limit: 200/minute
+- target: $.paths['/responses/bulk'].post
+  update:
+    x-apievangelist-rate-limit-bucket: Data Bridge
+    x-apievangelist-rate-limit: 100/day
+    x-apievangelist-async: submit-then-poll
+    x-apievangelist-poll-operation: getResponsesBulkStatus
+    x-apievangelist-result-format: parquet
+- target: $.paths['/scores/bulk'].post
+  update:
+    x-apievangelist-rate-limit-bucket: Data Bridge
+    x-apievangelist-async: submit-then-poll
+    x-apievangelist-poll-operation: getScoresBulkStatus
+    x-apievangelist-result-format: parquet
+- target: $.paths['/ai/resolve'].post
+  update:
+    x-apievangelist-rate-limit-bucket: AI
+    x-apievangelist-rate-limit: 20 per 5-minute window
+    x-apievangelist-latency: typically ~10s, up to ~20s for complex queries
+- target: $.paths['/auth/token'].post
+  update:
+    x-apievangelist-rate-limit-bucket: Auth
+    x-apievangelist-rate-limit: 20/minute per username (1/second); refresh 30/minute
+- target: $.paths['/surveys/syndicated/timeseries'].post
+  update:
+    x-apievangelist-sunset: '2026-10-01'
+    x-apievangelist-replacement: postResponses
+- target: $.paths['/surveys/syndicated/scores'].post
+  update:
+    x-apievangelist-sunset: '2026-10-01'
+    x-apievangelist-replacement: postScores
+- target: $.paths['/surveys/syndicated/timeseries/batch'].post
+  update:
+    x-apievangelist-sunset: '2026-10-01'
+    x-apievangelist-replacement: postResponsesBulk

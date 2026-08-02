@@ -1,0 +1,81 @@
+generated: '2026-08-01'
+method: derived
+status: candidate
+source: openapi/morning-consult-openapi-original.yml
+search_result: >-
+  No Morning Consult MCP server exists. Searched the MCP registries, npm
+  (@modelcontextprotocol and @morningconsult scopes), github.com/morningconsult, the
+  published documentation at https://api.morningconsult.com/docs/ and
+  https://morningconsult.com/llms.txt. Probed api.morningconsult.com for
+  /.well-known/oauth-protected-resource, /.well-known/oauth-authorization-server and
+  /.well-known/agent-card.json — all 404. Morning Consult DOES ship an agentic surface,
+  but it is a REST operation (POST /ai/resolve, natural-language query over the survey
+  corpus) and a set of hosted "AI Research Agents" in the MCI product, not MCP.
+  No `MCPServer` pointer is wired in apis.yml, because no server is published.
+server: null
+tools:
+- name: list_data_sources
+  description: List the data sources available to the subscription and the countries
+    each supports.
+  source_operation: openapi/morning-consult-openapi-original.yml#getDataSources
+- name: list_categories
+  description: List question categories.
+  source_operation: openapi/morning-consult-openapi-original.yml#getCategories
+- name: list_entities
+  description: List entities (brands and other question subjects).
+  source_operation: openapi/morning-consult-openapi-original.yml#getEntities
+- name: list_questions
+  description: List the survey questions available in a data source and country.
+  source_operation: openapi/morning-consult-openapi-original.yml#getDataSourceQuestions
+- name: get_question
+  description: Get a single question, with its response options, by ID.
+  source_operation: openapi/morning-consult-openapi-original.yml#getDataSourceQuestion
+- name: list_scores
+  description: List the available scores (metrics) and their components.
+  source_operation: openapi/morning-consult-openapi-original.yml#getScores
+- name: list_score_data_sources
+  description: List the data sources a given score is available in.
+  source_operation: openapi/morning-consult-openapi-original.yml#getScoreDataSources
+- name: get_responses
+  description: Get aggregated question responses over a date range for a custom
+    audience.
+  source_operation: openapi/morning-consult-openapi-original.yml#postResponses
+- name: get_scores
+  description: Compute score timeseries data for a custom audience.
+  source_operation: openapi/morning-consult-openapi-original.yml#postScores
+- name: submit_bulk_responses
+  description: Queue an asynchronous bulk responses (Data Bridge) request.
+  source_operation: openapi/morning-consult-openapi-original.yml#postResponsesBulk
+- name: get_bulk_responses_status
+  description: Poll the status of a bulk responses request and retrieve its Parquet
+    download.
+  source_operation: openapi/morning-consult-openapi-original.yml#getResponsesBulkStatus
+- name: submit_bulk_scores
+  description: Queue an asynchronous bulk scores request.
+  source_operation: openapi/morning-consult-openapi-original.yml#postScoresBulk
+- name: get_bulk_scores_status
+  description: Poll the status of a bulk scores request and retrieve its Parquet
+    download.
+  source_operation: openapi/morning-consult-openapi-original.yml#getScoresBulkStatus
+- name: ask_survey_data
+  description: Resolve a standalone natural-language question against Morning Consult's
+    syndicated public-opinion data and return a summary.
+  source_operation: openapi/morning-consult-openapi-original.yml#postAIResolve
+excluded_operations:
+  reason: deprecated (sunset 2026-10-01) — see lifecycle/morning-consult-lifecycle.yml
+  operations:
+  - getSurveysSyndicatedCountries
+  - getSurveysSyndicatedCategories
+  - getSurveysSyndicatedEntities
+  - getSurveysSyndicatedQuestions
+  - getSurveysSyndicatedQuestionsByID
+  - getSurveysSyndicatedScores
+  - postSurveysSyndicatedScores
+  - getSurveysSyndicatedScoreCountries
+  - postSurveysSyndicatedTimeseries
+  - postSurveysSyndicatedTimeseriesBatch
+  - getSurveysSyndicatedTimeseriesBatchStatus
+auth_note: >-
+  Any MCP server over this API would need to handle the Basic-to-JWT exchange at
+  POST /auth/token and refresh the token before its 3600s expiry — there is no API key
+  and no OAuth authorization server to delegate to.

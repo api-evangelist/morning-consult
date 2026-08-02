@@ -1,0 +1,63 @@
+generated: '2026-08-01'
+method: searched
+source: >-
+  npm registry search (@morningconsult scope), PyPI, RubyGems, pkg.go.dev,
+  github.com/morningconsult, and https://api.morningconsult.com/docs/
+summary:
+  api_client_sdks: 0
+  first_party_packages: 3
+  note: >-
+    Morning Consult ships NO first-party client SDK for the Morning Consult API.
+    The API documentation instead publishes hand-rolled request examples in four
+    languages (cURL, Python/requests, Node.js/node-fetch, Go/net-http) — see
+    examples/morning-consult-examples.yml. The packages below are real, first-party
+    @morningconsult npm packages but they are internal engineering tooling, not API
+    client libraries, so no `SDKs` pointer is wired for this provider.
+packages:
+- language: javascript
+  registry: npm
+  name: '@morningconsult/eslint-config-morning-consult'
+  url: https://www.npmjs.com/package/@morningconsult/eslint-config-morning-consult
+  install: npm install @morningconsult/eslint-config-morning-consult
+  official: true
+  api_client: false
+  kind: internal-tooling
+  description: Morning Consult's shared ESLint configuration.
+- language: javascript
+  registry: npm
+  name: '@morningconsult/aws-assume-iam-role'
+  url: https://www.npmjs.com/package/@morningconsult/aws-assume-iam-role
+  install: npm install @morningconsult/aws-assume-iam-role
+  official: true
+  api_client: false
+  kind: internal-tooling
+  description: Node.js package to assume an IAM role on AWS EC2.
+- language: javascript
+  registry: npm
+  name: '@morningconsult/tcp-proxy'
+  url: https://www.npmjs.com/package/@morningconsult/tcp-proxy
+  install: npm install @morningconsult/tcp-proxy
+  official: true
+  api_client: false
+  kind: internal-tooling
+  description: A basic TCP proxy server.
+registries_probed:
+- registry: npm
+  result: 3 first-party @morningconsult packages, none an API client
+- registry: pypi
+  result: no morningconsult / morning-consult project (404)
+- registry: rubygems
+  result: no match
+- registry: pkg.go.dev
+  result: >-
+    github.com/morningconsult publishes Go libraries (grace, serrors,
+    go-elasticsearch-alerts, docker-credential-vault-login) — infrastructure
+    utilities, none a Morning Consult API client
+- registry: packagist
+  result: no match
+- registry: crates.io
+  result: no match
+- registry: nuget
+  result: no match
+- registry: maven-central
+  result: no match

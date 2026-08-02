@@ -1,0 +1,54 @@
+generated: '2026-08-01'
+method: probed
+source: live GET of /.well-known/* on every Morning Consult host in apis.yml + OpenAPI servers[]
+note: >-
+  Every well-known path probed returned a negative result. Morning Consult publishes
+  no RFC 9116 security.txt, no OIDC/OAuth discovery document, no RFC 9727 api-catalog,
+  no ai-plugin manifest and no A2A agent card on any host. Recorded as observed data —
+  no documents were saved and no WellKnown pointer is wired, because nothing is served.
+  The security program itself IS published, just not at /.well-known/security.txt — see
+  security/morning-consult-vulnerability-disclosure.yml (https://morningconsult.com/security).
+hosts:
+- host: https://api.morningconsult.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://morningconsult.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /llms.txt
+    status: 200
+    file: ../llms/morning-consult-llms.txt
+- host: https://intel.morningconsult.com
+  note: MCI application host is WAF-gated; every /.well-known/* path answers 403 to
+    anonymous clients, so no negative or positive determination is possible.
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/agent-card.json
+    status: 403
+  - path: /.well-known/agent.json
+    status: 403

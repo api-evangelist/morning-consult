@@ -1,0 +1,34 @@
+generated: '2026-08-01'
+method: generated
+source: openapi/morning-consult-openapi-original.yml + https://api.morningconsult.com/docs/
+api: morning-consult:morning-consult-api
+note: >-
+  Morning Consult publishes no AGENTS.md or provider-authored skill files. These are
+  generated operating instructions, grounded only in operationIds that exist verbatim in
+  the harvested OpenAPI, and in the conventions, rate limits and error semantics captured
+  from the published documentation.
+skills:
+- file: morning-consult-authenticate.md
+  name: Authenticate to the Morning Consult API
+  api: openapi/morning-consult-openapi-original.yml
+  operations: [postAuthToken]
+- file: morning-consult-brand-trendline.md
+  name: Pull a brand trendline from Morning Consult
+  api: openapi/morning-consult-openapi-original.yml
+  operations: [postAuthToken, getDataSources, getEntities, getDataSourceQuestions, postResponses]
+- file: morning-consult-custom-audience.md
+  name: Build a custom audience for a Morning Consult data request
+  api: openapi/morning-consult-openapi-original.yml
+  operations: [getDataSourceQuestions, getDataSourceQuestion, postResponses, postScores]
+- file: morning-consult-compute-score.md
+  name: Compute a Morning Consult score
+  api: openapi/morning-consult-openapi-original.yml
+  operations: [getScores, getScoreDataSources, getEntities, postScores]
+- file: morning-consult-bulk-data-bridge.md
+  name: Load Morning Consult data in bulk via Data Bridge
+  api: openapi/morning-consult-openapi-original.yml
+  operations: [postResponsesBulk, getResponsesBulkStatus, postScoresBulk, getScoresBulkStatus]
+- file: morning-consult-ai-resolve.md
+  name: Ask Morning Consult a natural-language question
+  api: openapi/morning-consult-openapi-original.yml
+  operations: [postAIResolve]

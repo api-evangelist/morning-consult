@@ -1,0 +1,97 @@
+generated: '2026-08-01'
+method: searched
+source: https://api.morningconsult.com/docs/#migration-guide
+derived_from: openapi/morning-consult-openapi-original.yml
+versioning:
+  scheme: uri-path
+  current: v1
+  base_url: https://api.morningconsult.com/v1
+  spec_version: 1.0.0
+  docs: https://api.morningconsult.com/docs/
+deprecation:
+  policy_url: https://api.morningconsult.com/docs/#migration-guide
+  published: true
+  sunset_date: '2026-10-01'
+  sunset_header: false
+  deprecation_header: false
+  in_spec: true
+  statement: >-
+    "Deprecated endpoints will remain available through October 1, 2026. After that
+    date, clients should expect to use only the replacement endpoints documented here."
+  summary: >-
+    Morning Consult is moving from the globally-scoped /v1/surveys/syndicated/* family
+    to a data-source-aware surface. Data requests now require an explicit
+    data_source_id, question lookup is scoped by data_source_id + country_code, country
+    discovery moves into GET /data_sources, and timeseries/batch becomes
+    responses/bulk. The deprecation is marked on every affected operation in the
+    OpenAPI (deprecated: true) AND carries a published endpoint-by-endpoint migration
+    map with a hard sunset date — the strongest form of deprecation signal short of
+    RFC 8594 Sunset headers, which Morning Consult does not emit.
+  migration_map:
+  - from: GET /surveys/syndicated/countries
+    to: GET /data_sources
+    change: Countries are now nested under each returned data source as data_sources[].countries.
+  - from: GET /surveys/syndicated/categories
+    to: GET /categories
+    change: Country is no longer required to list categories.
+  - from: GET /surveys/syndicated/entities
+    to: GET /entities
+    change: country_code becomes optional and data_source_id becomes an optional filter.
+  - from: GET /surveys/syndicated/questions
+    to: GET /data_sources/{data_source_id}/countries/{country_code}/questions
+    change: Question lookup is now explicitly scoped by data source and country.
+  - from: GET /surveys/syndicated/questions/{question_id}
+    to: GET /data_sources/{data_source_id}/countries/{country_code}/questions/{question_id}
+    change: Clients must know the data source and country context for the question.
+  - from: GET /surveys/syndicated/scores
+    to: GET /scores
+    change: Score metadata can be filtered by data_source_id, and score objects may
+      include components.
+  - from: GET /surveys/syndicated/scores/{score_id}/countries
+    to: GET /scores/{score_id}/data_sources
+    change: Countries are returned per data source instead of as one flat list.
+  - from: POST /surveys/syndicated/scores
+    to: POST /scores
+    change: Add required data_source_id.
+  - from: POST /surveys/syndicated/timeseries
+    to: POST /responses
+    change: Add required data_source_id; the request stays body-scoped.
+  - from: POST /surveys/syndicated/timeseries/batch
+    to: POST /responses/bulk
+    change: Add required data_source_id; the new bulk route keeps named audiences and
+      asynchronous polling.
+  - from: GET /surveys/syndicated/timeseries/batch/{request_id}
+    to: GET /responses/bulk/{request_id}
+    change: Poll the new bulk responses status route instead of the legacy batch status
+      route.
+deprecated_operations:
+- openapi/morning-consult-openapi-original.yml#getSurveysSyndicatedCountries
+- openapi/morning-consult-openapi-original.yml#getSurveysSyndicatedCategories
+- openapi/morning-consult-openapi-original.yml#getSurveysSyndicatedEntities
+- openapi/morning-consult-openapi-original.yml#getSurveysSyndicatedQuestions
+- openapi/morning-consult-openapi-original.yml#getSurveysSyndicatedQuestionsByID
+- openapi/morning-consult-openapi-original.yml#getSurveysSyndicatedScores
+- openapi/morning-consult-openapi-original.yml#postSurveysSyndicatedScores
+- openapi/morning-consult-openapi-original.yml#getSurveysSyndicatedScoreCountries
+- openapi/morning-consult-openapi-original.yml#postSurveysSyndicatedTimeseries
+- openapi/morning-consult-openapi-original.yml#postSurveysSyndicatedTimeseriesBatch
+- openapi/morning-consult-openapi-original.yml#getSurveysSyndicatedTimeseriesBatchStatus
+status_page: null
+status_page_note: >-
+  Probed status.morningconsult.com (no DNS) and searched for a hosted status page
+  (Statuspage/Instatus/Better Stack). Morning Consult publishes no public API status
+  page, so no StatusPage pointer is wired.
+sla:
+  url: https://morningconsult.com/mci-terms-and-conditions
+  uptime_target: null
+  note: No numeric uptime target is published publicly; SLA terms sit inside the MCI
+    subscription agreement.
+changelog:
+  url: null
+  note: >-
+    No dated public changelog. The Migration Guide at
+    https://api.morningconsult.com/docs/#migration-guide is the only published record
+    of API change, so no ChangeLog pointer is wired.
+support:
+  api_support_email: api-support@morningconsult.com
+  contact: https://morningconsult.com/contact-us

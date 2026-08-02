@@ -1,0 +1,82 @@
+generated: '2026-08-01'
+method: searched
+source: openapi/morning-consult-openapi-original.yml
+docs: https://api.morningconsult.com/docs/#authentication
+summary:
+  types:
+  - http
+  http_schemes:
+  - basic
+  - bearer
+  oauth2_flows: []
+  api_key_in: []
+  model: >-
+    Two-step. HTTP Basic credentials (a Morning Consult Intelligence username and
+    password issued by the customer's Account Executive) are exchanged at
+    POST /auth/token for a short-lived JWT plus a refresh token. Every other operation
+    is authenticated with the JWT as an Authorization: Bearer header. There is no OAuth
+    2.0 authorization server, no OIDC discovery document, no API key, and no scope
+    surface — entitlement is carried in the JWT's claims and enforced per subscription.
+default_security:
+- JWT
+schemes:
+- name: Basic
+  type: http
+  scheme: basic
+  description: Username and password credentials for initial authentication.
+  used_by:
+  - postAuthToken
+  sources:
+  - openapi/morning-consult-openapi-original.yml
+- name: JWT
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: JWT Bearer header authentication for performing regular requests.
+  default: true
+  used_by: all operations except postAuthToken
+  sources:
+  - openapi/morning-consult-openapi-original.yml
+- name: RefreshToken
+  type: http
+  scheme: bearer
+  description: Refresh Token bearer header authentication for renewing tokens.
+  used_by:
+  - postAuthToken
+  note: >-
+    Declared in components.securitySchemes and listed as the alternate security
+    requirement on POST /auth/token. Missed by the mechanical derive pass, which
+    collapses http/bearer schemes; recovered from the spec and the docs.
+  sources:
+  - openapi/morning-consult-openapi-original.yml
+token:
+  endpoint: POST /auth/token
+  operation_id: postAuthToken
+  request_auth: Basic (initial) or RefreshToken bearer (renewal)
+  response_fields:
+    id_token: The JWT to send in the Authorization header on all other requests.
+    refresh_token: Exchange for a new token pair before expiry.
+    expires_in: Seconds until the JWT expires (3600 in the published example/default).
+    token_type: Bearer
+  expiry_seconds: 3600
+  rotation: >-
+    Exchange refresh_token at POST /auth/token before expires_in elapses. Credential
+    exchange is limited to one request per second and 20 per minute per username;
+    refresh-token requests are limited to 30 per minute.
+  errors:
+  - invalid credentials
+  - invalid or expired refresh token
+provisioning:
+  self_service: false
+  process: >-
+    Credentials are issued by the customer's Morning Consult Account Executive. API
+    access is included with a Morning Consult Intelligence subscription at no additional
+    cost but must be enabled for the account.
+  sso_note: >-
+    Accounts that authenticate to MCI with SSO must request a separate API password from
+    their Account Executive, because SSO cannot mint a JWT at POST /auth/token.
+  signup: https://morningconsult.com/book-a-demo
+scopes:
+  present: false
+  note: No OAuth scopes. Authorization is claim-based — a 403 "missing necessary claims"
+    is returned when the JWT lacks an entitlement (e.g. bulk / Data Bridge access).

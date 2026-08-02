@@ -1,0 +1,2857 @@
+openapi: 3.0.3
+info:
+  title: Morning Consult API
+  version: '1.0.0'
+  description: The Morning Consult API provides access to various forms of survey data collected by Morning Consult
+  contact:
+    email: api-support@morningconsult.com
+  termsOfService: 'https://morningconsult.com/mci-terms-and-conditions'
+servers:
+  - url: 'https://api.morningconsult.com/v1'
+    description: Version 1 API
+tags:
+  - name: Authentication
+    description: Authentication related operations.
+  - name: Lookup
+    description: Metadata information related to syndicated surveys.
+  - name: Data
+    description: Syndicated tracking survey data data responses.
+  - name: AI
+    description: Morning Consult's AI backed by survey data responses.
+paths:
+  /surveys/syndicated/countries:
+    get:
+      summary: Get Countries
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/data_sources](#GET-getDataSources) resource API for updated data
+        source and country discovery.
+
+        Get available countries. The `country_code` parameter is required to browse
+        categories and entities via the [/surveys/syndicated/categories](#GET-getSurveysSyndicatedCategories) and
+        the [/surveys/syndicated/entities](#GET-getSurveysSyndicatedEntities) endpoints, respectively, and it
+        can be included in the [/surveys/syndicated/questions](#GET-getSurveysSyndicatedQuestions) endpoint
+        to filter questions to a specific country.
+
+        If an expected country does not appear in the response body, reach out
+        to your Account Executive to confirm your country-level access is properly
+        configured.
+      deprecated: true
+      operationId: getSurveysSyndicatedCountries
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetCountriesOutput'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /surveys/syndicated/categories:
+    get:
+      summary: Get Categories
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/categories](#GET-getCategories) resource API for updated category discovery.
+
+        Get question categories for a country. The categories can be used in
+        the [/surveys/syndicated/entities](#GET-getSurveysSyndicatedEntities) and
+        [/surveys/syndicated/questions](#GET-getSurveysSyndicatedQuestions) endpoints to
+        filter entities and questions to a specific category.
+      deprecated: true
+      operationId: getSurveysSyndicatedCategories
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetCategoriesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/country_code'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/pagination_token'
+  /categories:
+    get:
+      summary: Get Categories
+      description: >-
+        Get question categories across all data sources the caller has access
+        to. The categories can be used in metadata endpoints to filter entities
+        and questions to a specific category.
+      operationId: getCategories
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetCategoriesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/pagination_token'
+  /surveys/syndicated/entities:
+    get:
+      summary: Get Entities
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/entities](#GET-getEntities) resource API for updated entity discovery.
+
+        Search tracked entities (e.g., brands, products, public figures, issues)
+        for a specific country. Queries are run against the `entity.label` field of all
+        questions included in our syndicated surveys. Wildcard search is supported.
+      deprecated: true
+      operationId: getSurveysSyndicatedEntities
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetEntitiesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/country_code'
+        - $ref: '#/components/parameters/category_id'
+        - $ref: '#/components/parameters/entity_type_id'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/pagination_token'
+  /surveys/syndicated/questions:
+    get:
+      summary: Get Questions
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/data_sources/{data_source_id}/countries/{country_code}/questions](#GET-getDataSourceQuestions)
+        resource API for updated question discovery.
+
+        Search questions. The ID field of each returned question can be used in
+        the [/surveys/syndicated/timeseries](#POST-postSurveysSyndicatedTimeseries) endpoint as the question
+        of interest or in the `audience` parameter to filter responses.
+      deprecated: true
+      operationId: getSurveysSyndicatedQuestions
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetQuestionsOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - name: country_code
+          in: query
+          description: >-
+            The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+            country code used to filter results.
+
+            The available countries can be retrieved from the
+            [/surveys/syndicated/countries](#GET-getSurveysSyndicatedCountries) endpoint.
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - $ref: '#/components/parameters/category_id'
+        - $ref: '#/components/parameters/entity_id'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/pagination_token'
+  /data_sources:
+    get:
+      summary: Get Data Sources
+      description: >-
+        Get the data sources the caller has access to. The `id` of each data
+        source can be used in other endpoints (e.g.
+        [/data_sources/{data_source_id}/countries/{country_code}/questions](#GET-getDataSourceQuestions))
+        to scope requests to a particular data source.
+
+        Data sources the caller does not have access to are not returned. If an
+        expected data source is missing, reach out to your Account Executive to
+        confirm your entitlements are properly configured.
+      operationId: getDataSources
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetDataSourcesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/pagination_token'
+  /entities:
+    get:
+      summary: Get Entities
+      description: >-
+        List tracked entities (e.g., brands, products, public figures,
+        issues).
+      operationId: getEntities
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetEntitiesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/data_source_id_query'
+        - $ref: '#/components/parameters/country_code'
+        - $ref: '#/components/parameters/category_id'
+        - $ref: '#/components/parameters/entity_type_id'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/pagination_token'
+  /data_sources/{data_source_id}/countries/{country_code}/questions:
+    get:
+      summary: Get Questions
+      description: >-
+        Get questions for a data source and country.
+      operationId: getDataSourceQuestions
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetDataSourceQuestionsOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/data_source_id'
+        - $ref: '#/components/parameters/path_country_code'
+        - $ref: '#/components/parameters/category_id'
+        - $ref: '#/components/parameters/entity_id'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/pagination_token'
+  /surveys/syndicated/questions/{question_id}:
+    get:
+      summary: Get a single question by its unique identifier
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/data_sources/{data_source_id}/countries/{country_code}/questions/{question_id}](#GET-getDataSourceQuestion)
+        resource API for updated question lookup.
+
+        Retrieve all information associated with a `question_id`. This endpoint
+        can be leveraged to get the human readable information associated with
+        a previously obtained ID.
+      deprecated: true
+      operationId: getSurveysSyndicatedQuestionsByID
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetQuestionByIDOutput'
+        '400':
+          $ref: '#/components/responses/InvalidQuestionIDError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - name: question_id
+          in: path
+          required: true
+          description: The question ID to get
+          example: 1820851b-a527-4395-9529-f4da16de36a7
+          schema:
+            $ref: '#/components/schemas/QuestionID'
+  /data_sources/{data_source_id}/countries/{country_code}/questions/{question_id}:
+    get:
+      summary: Get a single question by its unique identifier
+      description: >-
+        Retrieve all information associated with a question within a specific
+        data source and country.
+      operationId: getDataSourceQuestion
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetDataSourceQuestionOutput'
+        '400':
+          $ref: '#/components/responses/InvalidQuestionIDError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/data_source_id'
+        - $ref: '#/components/parameters/path_country_code'
+        - name: question_id
+          in: path
+          required: true
+          description: The question ID to get.
+          example: 1820851b-a527-4395-9529-f4da16de36a7
+          schema:
+            $ref: '#/components/schemas/QuestionID'
+  /surveys/syndicated/scores:
+    get:
+      summary: Get Scores
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/scores](#GET-getScores) resource API for updated score discovery.
+
+        Search scores (e.g., Net Favorability, NPS, ICS). Scores can be used in
+        the [/surveys/syndicated/scores](#POST-postSurveysSyndicatedScores)
+        endpoint as the score of interest.
+      deprecated: true
+      operationId: getSurveysSyndicatedScores
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetScoresOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - name: country_code
+          in: query
+          description: >-
+            The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+            country code used to filter results.
+
+            The available countries can be retrieved from the
+            [/surveys/syndicated/countries](#GET-getSurveysSyndicatedCountries) endpoint.
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/pagination_token'
+    post:
+      summary: Get Scores for Syndicated Timeseries Data
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/scores](#POST-postScores) resource API for updated score retrieval.
+
+        Get score data for a particular score. The `score_id` must be valid in
+        the specified `country_code`. Every `question_id` included in the
+        `audience` body must also be from the same `country_code`.
+      tags:
+        - Data
+      deprecated: true
+      operationId: postSurveysSyndicatedScores
+      responses:
+        '200':
+          $ref: '#/components/responses/PostSurveysSyndicatedScoresOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        description: Request body for syndicated tracking score data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostSurveysSyndicatedScoresInput'
+            examples:
+              Example:
+                $ref: '#/components/examples/PostSyndicatedScoresInput'
+              ExampleWithEntity:
+                $ref: '#/components/examples/PostSyndicatedScoresInputWithEntity'
+  /surveys/syndicated/scores/{score_id}/countries:
+    get:
+      summary: Get Countries for Score
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/scores/{score_id}/data_sources](#GET-getScoreDataSources) resource API for
+        updated score availability discovery.
+
+        Not all scores are valid in all countries. This returns the list of
+        countries a specific score is valid in.
+      deprecated: true
+      operationId: getSurveysSyndicatedScoreCountries
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetScoreCountriesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - name: score_id
+          in: path
+          required: true
+          description: The score ID to get countries for
+          example: 48ef9961-1dc8-42d1-b03c-c480681bc732
+          schema:
+            $ref: '#/components/schemas/ScoreID'
+  /surveys/syndicated/timeseries:
+    post:
+      summary: Get Syndicated Survey Timeseries Data
+      description: >-
+          Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+          [/responses](#POST-postResponses) resource API for updated question
+          response retrieval.
+
+          Get respondents data for a particular question. Every `question_id` included
+          in the request body --- whether as the question of interest or within the
+          `audience` parameter --- must be from the same country.
+      tags:
+        - Data
+      deprecated: true
+      operationId: postSurveysSyndicatedTimeseries
+      responses:
+        '200':
+          $ref: '#/components/responses/PostSurveysSyndicatedTimeseriesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        description: Request body for syndicated tracking survey data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostSurveysSyndicatedTimeseriesInput'
+            examples:
+              Example:
+                $ref: '#/components/examples/PostSyndicatedTimeseriesInput'
+  /surveys/syndicated/timeseries/batch:
+    post:
+      summary: Submit a Batch Timeseries Request
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/responses](#POST-postResponses) resource API for updated response retrieval.
+
+        Submit a request to asynchronously generate timeseries data for one or
+        more questions and audiences. The max date range for a single request is
+        10 years. Returns a `request_id` that can be used to poll the status of
+        the report via the
+        [/surveys/syndicated/timeseries/batch/{request_id}](#GET-getSurveysSyndicatedTimeseriesBatchStatus)
+        endpoint. When the report is complete, a download URL will be provided
+        to retrieve the data.
+      tags:
+        - Data
+      deprecated: true
+      operationId: postSurveysSyndicatedTimeseriesBatch
+      responses:
+        '200':
+          $ref: '#/components/responses/PostResponsesBulkOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        description: Request body for submitting a batch timeseries report
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostSurveysSyndicatedTimeseriesBatchInput'
+            examples:
+              Example:
+                $ref: '#/components/examples/PostSurveysSyndicatedTimeseriesBatchInput'
+  /surveys/syndicated/timeseries/batch/{request_id}:
+    get:
+      summary: Get Batch Timeseries Request Status
+      description: >-
+        Deprecated. This endpoint will be sunset on October 1, 2026. Use the
+        [/responses](#POST-postResponses) resource API for updated response retrieval.
+
+        Get the status of a previously submitted batch timeseries report request.
+        When the report is complete, the response will include a `download_url`
+        that can be used to download the report data.
+      tags:
+        - Lookup 
+      deprecated: true
+      operationId: getSurveysSyndicatedTimeseriesBatchStatus
+      responses:
+        '200':
+          $ref: '#/components/responses/GetResponsesBulkStatusOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          description: The request ID returned from the batch timeseries request.
+          example: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            type: string
+            format: uuid
+  /ai/resolve:
+    post:
+      summary: Resolve a user query
+      description: >-
+        Given a query about Morning Consult's syndicated public opinion
+        data sets, pull data from respondent interviews and produce a
+        summary of the data. The query should be a standalone question,
+        as conversation history is not preserved between calls to the endpoint.
+
+        Responses will typically take around 10 seconds, with more complex queries
+        taking upwards of 20 seconds.
+      tags:
+        - AI
+      operationId: postAIResolve
+      x-dd-p50-warning-threshold: 12
+      x-dd-p50-critical-threshold: 20
+      x-dd-p90-warning-threshold: 25
+      x-dd-p90-critical-threshold: 40
+      x-dd-average-warning-threshold: 18
+      x-dd-average-critical-threshold: 30
+      x-dd-notification-channel: "@diamond-dogs@morningconsult.com"
+      responses:
+        '200':
+          $ref: '#/components/responses/PostAIResolveOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        description: AI resolve input parameters.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAIResolveInput'
+            examples:
+              Example:
+                $ref: '#/components/examples/PostAIResolveInput'
+  /auth/token:
+    post:
+      x-docs-exclude-operation-json: true
+      x-docs-code-example-apitoken: basic
+      summary: Retrieve Authentication Token
+      operationId: postAuthToken
+      responses:
+        '200':
+          $ref: '#/components/responses/PostAuthTokenOutput'
+        '400':
+          $ref: '#/components/responses/InvalidCredentialsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - Basic: []
+        - RefreshToken: []
+      description: >-
+        Exchange credentials for JWT and Refresh tokens. The returned tokens
+        are required to use other API endpoints and to retrieve new tokens
+        before they expire.
+
+        For initial authentication, supply your username and password with the
+        Basic authorization format header. For subsequent authentications, use
+        the refresh token in the Bearer format.
+      tags:
+        - Authentication
+  /scores:
+    get:
+      summary: Get Scores
+      description: >-
+        Search scores (e.g., Net Favorability, NPS, ICS) across the data sources
+        you have access to. Supply the optional `data_source_id` parameter to
+        restrict results to a specific data source.
+
+        Scores are universal: a given score ID is applicable to any data source
+        where it can be calculated. To discover which data sources a score is
+        valid in, use the
+        [/scores/{score_id}/data_sources](#GET-getScoreDataSources) endpoint.
+      operationId: getScores
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetScoresOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - $ref: '#/components/parameters/data_source_id_query'
+        - name: country_code
+          in: query
+          description: >-
+            The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+            country code used to filter results.
+          schema:
+            $ref: '#/components/schemas/CountryCode'
+        - $ref: '#/components/parameters/query'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/pagination_token'
+    post:
+      summary: Get Scores for Timeseries Data
+      description: >-
+        Get score data for a particular score against any data source you have
+        access to. The `score_id` must be valid in the specified `data_source_id`
+        and `country_code`. Every `question_id` included in the `audience` body
+        must also be from the same `country_code`.
+
+
+        The `min_date` and `max_date` range is bounded to 10 years. When both
+        are omitted, the range defaults to the last 10 years. If only one is
+        provided, the request is rejected.
+      tags:
+        - Data
+      operationId: postScores
+      responses:
+        '200':
+          $ref: '#/components/responses/PostScoresOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        description: Request body for score data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostScoresInput'
+            examples:
+              Example:
+                $ref: '#/components/examples/PostScoresInput'
+              ExampleWithEntity:
+                $ref: '#/components/examples/PostScoresInputWithEntity'
+  /scores/{score_id}/data_sources:
+    get:
+      summary: Get Data Sources for Score
+      description: >-
+        Scores are not available in every data source, nor in every country
+        within a given data source. This endpoint returns the list of data
+        sources a score is available in, along with the countries the score
+        can be calculated in for each data source.
+      operationId: getScoreDataSources
+      tags:
+        - Lookup
+      responses:
+        '200':
+          $ref: '#/components/responses/GetScoreDataSourcesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - name: score_id
+          in: path
+          required: true
+          description: The score ID to get data sources for.
+          example: 48ef9961-1dc8-42d1-b03c-c480681bc732
+          schema:
+            $ref: '#/components/schemas/ScoreID'
+  /responses:
+    post:
+      summary: Get Aggregated Question Responses Data
+      description: >-
+        Get aggregated data for a requested question. The range between `min_date` and `max_date`
+        must not exceed 10 years.
+      tags:
+        - Data
+      operationId: postResponses
+      responses:
+        '200':
+          $ref: '#/components/responses/PostResponsesOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        description: Request body for responses data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostResponsesInput'
+            examples:
+              Example:
+                $ref: '#/components/examples/PostResponsesInput'
+  /responses/bulk:
+    post:
+      summary: Submit a Bulk Responses Request
+      description: >-
+        Submit a request to asynchronously generate timeseries data for one or
+        more questions and audiences from the specified data source. The max
+        date range for a single request is 10 years. Returns a `request_id`
+        that can be used to poll the status of the report via the
+        [/responses/bulk/{request_id}](#GET-getResponsesBulkStatus) endpoint.
+        When the report is complete, a download URL will be provided to
+        retrieve the data.
+      tags:
+        - Data
+      operationId: postResponsesBulk
+      responses:
+        '200':
+          $ref: '#/components/responses/PostResponsesBulkOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        description: Request body for submitting a bulk responses report
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostResponsesBulkInput'
+            examples:
+              Example:
+                $ref: '#/components/examples/PostResponsesBulkInput'
+  /responses/bulk/{request_id}:
+    get:
+      summary: Get Bulk Responses Request Status
+      description: >-
+        Get the status of a previously submitted bulk responses report request.
+        When the report is complete, the response will include a `download_url`
+        that can be used to download the report data.
+      tags:
+        - Lookup
+      operationId: getResponsesBulkStatus
+      responses:
+        '200':
+          $ref: '#/components/responses/GetResponsesBulkStatusOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          description: The request ID returned from the bulk responses request.
+          example: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            type: string
+            format: uuid
+  /scores/bulk:
+    post:
+      summary: Submit a Bulk Scores Request
+      description: >-
+        Submit a request to asynchronously generate timeseries score data for
+        one or more named scores and audiences from the specified data source.
+        The max date range for a single request is 10 years. Returns a
+        `request_id` that can be used to poll the status of the report via the
+        [/scores/bulk/{request_id}](#GET-getScoresBulkStatus) endpoint.
+        When the report is complete, a download URL will be provided to
+        retrieve the data.
+      tags:
+        - Data
+      operationId: postScoresBulk
+      responses:
+        '200':
+          $ref: '#/components/responses/PostScoresBulkOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        description: Request body for submitting a bulk scores report
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostScoresBulkInput'
+            examples:
+              Example:
+                $ref: '#/components/examples/PostScoresBulkInput'
+  /scores/bulk/{request_id}:
+    get:
+      summary: Get Bulk Scores Request Status
+      description: >-
+        Get the status of a previously submitted bulk scores report request.
+        When the report is complete, the response will include a `download_url`
+        that can be used to download the report data.
+      tags:
+        - Lookup
+      operationId: getScoresBulkStatus
+      responses:
+        '200':
+          $ref: '#/components/responses/GetScoresBulkStatusOutput'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          description: The request ID returned from the bulk scores request.
+          example: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+          schema:
+            type: string
+            format: uuid
+components:
+  schemas:
+    PaginationToken:
+      type: string
+      format: base64
+      description: >-
+        A pagination token to use to get paginated results.
+        For more details, see the section on [Pagination](#pagination).
+      pattern: '^(?:[A-Za-z\d+/]{4})*(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?$'
+      minLength: 3
+      maxLength: 300
+      example: eyJxdWVyeSI6ImRvZ3MifQ==
+    Error:
+      type: object
+      description: Error message.
+      additionalProperties: false
+      example:
+        code: 500
+        status: Internal Server Error
+        errors:
+          - 'Oops, something went wrong'
+      properties:
+        code:
+          type: integer
+          description: Numeric HTTP status code.
+          example: 500
+          format: int32
+          minimum: 100
+          maximum: 599
+        status:
+          type: string
+          description: Text description of HTTP status code.
+          example: Internal Server Error
+        errors:
+          type: array
+          description: Messages describing errors.
+          items:
+            title: error
+            type: string
+            description: A specific error message.
+          example:
+            - 'Oops, something went wrong'
+    Entity:
+      title: Entity
+      type: object
+      description: 'A particular subject to which a question may refer, such as a specific brand or politician.'
+      properties:
+        id:
+          type: string
+          description: 'The ID of the entity, which can be used for filtering questions.'
+        label:
+          type: string
+          description: 'The descriptive label of the entity, usually the name.'
+      example:
+        id: autotrader
+        label: Autotrader
+    EntityType:
+      title: EntityType
+      description: 'A entity type, such as brand or favorability.'
+      properties:
+        id:
+          type: string
+          description: 'The ID of the entity type, which can be used for filtering entities.'
+        label:
+          type: string
+          description: 'The descriptive label of the entity type.'
+      example: {
+        "id": "favorability",
+        "label": "Favorability"
+      }
+    Category:
+      title: Category
+      type: object
+      description: "A type of question."
+      properties:
+        id:
+          type: string
+          description: >-
+            The ID of the category, which can be used for filtering questions and entities.
+        label:
+          type: string
+          description: The descriptive label for the category.
+      example:
+        id: brand
+        label: Brand
+    CountryCode:
+      title: CountryCode
+      description: >-
+        Two letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code.
+        This can be used in the `country_code` query parameter of multiple endpoints to limit results
+        to the specific country.
+      type: string
+      example: us
+      pattern: '^[a-z]+'
+      minLength: 2
+      maxLength: 2
+    Country:
+      title: Country
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/CountryCode'
+        label:
+          type: string
+          description: The full name for the country.
+      example:
+        code: us
+        label: United States
+      description: A country.
+    DataSource:
+      title: Data Source
+      type: object
+      description: A data source and the countries it supports.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the data source.
+          example: 00de2081-e013-411d-823c-cd483283e38d
+        name:
+          type: string
+          description: The human-readable name of the data source.
+          example: Daily Tracker
+        countries:
+          type: array
+          description: The countries the score is available in for this data source.
+          items:
+            $ref: '#/components/schemas/Country'
+    ScoreID:
+      title: Score ID
+      description: >-
+        The unique identifier for a score.
+      type: string
+      format: uuid
+      example: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
+    Score:
+      title: Score
+      description: >-
+        The representation of a score and its relevant metadata. If entity type
+        is present, then an entity that satisfies the entity type must be passed
+        into [/surveys/syndicated/scores](#POST-postSurveysSyndicatedScores). If
+        `components` is present, at least one component ID must be supplied in
+        `component_ids` when running the score.
+      type: object
+      example:
+        id: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
+        label: Avon Favorability
+      properties:
+        id:
+          $ref: '#/components/schemas/ScoreID'
+        label:
+          type: string
+          description: A short label describing the score.
+        description:
+          type: string
+          description: A description of the score.
+        entity_type:
+          $ref: '#/components/schemas/EntityType'
+        components:
+          type: array
+          description: >-
+            The components available for this score. Scores such as "Price
+            Surprise" and "Unavailability" expose components that restrict the
+            calculation to a subset of categories (for example
+            "home_appliances"). If this field is present, at least one
+            component ID must be provided in `component_ids` when running the
+            score.
+          items:
+            type: object
+            description: A component available for this score.
+            properties:
+              id:
+                type: string
+                description: The unique identifier for the component.
+                example: home_appliances
+            required:
+              - id
+    ResponseID:
+      title: ResponseID
+      type: string
+      pattern: '^[0-9]+$'
+      minLength: 0
+      maxLength: 100
+      description: >-
+        Unique identifier for a question response. Response IDs are only unique within a question,
+        and not across them.
+      example: '1'
+    ResponseLabel:
+      title: ResponseLabel
+      type: string
+      description: 'The full textual label for the response, as selected by a respondent.'
+      example: Very Favorable
+    Responses:
+      type: array
+      description: The response IDs and labels for the question.
+      items:
+        $ref: '#/components/schemas/Response'
+    Response:
+      title: response
+      type: object
+      description: A single response option for a question.
+      example:
+        id: '1'
+        label: Several times a day
+      properties:
+        id:
+          $ref: '#/components/schemas/ResponseID'
+        label:
+          $ref: '#/components/schemas/ResponseLabel'
+    QuestionID:
+      title: Question ID
+      description: >-
+        The unique identifier for a question.
+      type: string
+      format: uuid
+      example: a7ee637c-e5d1-4cf8-b484-8eb372f22941
+    DataSourceID:
+      title: Data Source ID
+      description: The unique identifier for a data source.
+      type: string
+      format: uuid
+      example: 00de2081-e013-411d-823c-cd483283e38d
+    Question:
+      title: Question
+      description: The representation of a survey question and its relevant metadata.
+      type: object
+      example:
+        id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
+        label: Avon Usage Frequency
+        text: How often do you use or purchase something from the following? --- Avon
+        country:
+          code: fr
+          label: France
+        category:
+          id: brand
+          label: Brand
+        responses:
+          - id: '1'
+            label: Several times a day
+          - id: '2'
+            label: About once a day
+          - id: '3'
+            label: A few times a week
+          - id: '4'
+            label: About once a week
+          - id: '5'
+            label: About once a month or less often
+          - id: '6'
+            label: I do not have an account or do not use
+        entity:
+          id: avon
+          label: Avon
+      properties:
+        id:
+          $ref: '#/components/schemas/QuestionID'
+        label:
+          type: string
+          description: A short label describing the question.
+        text:
+          type: string
+          description: >-
+            The full text of the question, as shown to respondents. For questions that we
+            do not ask directly, such as certain demographic questions, this
+            field will be omitted.
+        country:
+          $ref: '#/components/schemas/Country'
+        category:
+          $ref: '#/components/schemas/Category'
+        responses:
+          $ref: '#/components/schemas/Responses'
+        entity:
+          $ref: '#/components/schemas/Entity'
+    DataSourceQuestion:
+      title: Data Source Question
+      description: A question across accessible data sources.
+      type: object
+      required:
+        - id
+        - label
+        - country
+        - data_source_id
+      example:
+        id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
+        label: Avon Usage Frequency
+        text: How often do you use or purchase something from the following? --- Avon
+        data_source_id: 00de2081-e013-411d-823c-cd483283e38d
+        country:
+          code: fr
+          label: France
+        category:
+          id: brand
+          label: Brand
+        responses:
+          - id: '1'
+            label: Several times a day
+          - id: '2'
+            label: About once a day
+          - id: '3'
+            label: A few times a week
+          - id: '4'
+            label: About once a week
+          - id: '5'
+            label: About once a month or less often
+          - id: '6'
+            label: I do not have an account or do not use
+        entity:
+          id: avon
+          label: Avon
+      properties:
+        id:
+          $ref: '#/components/schemas/QuestionID'
+        label:
+          type: string
+          description: A short label describing the question.
+        text:
+          type: string
+          description: >-
+            The full text of the question, as shown to respondents. For questions that we
+            do not ask directly, such as certain demographic questions, this
+            field will be omitted.
+        data_source_id:
+          $ref: '#/components/schemas/DataSourceID'
+        country:
+          $ref: '#/components/schemas/Country'
+        category:
+          $ref: '#/components/schemas/Category'
+        responses:
+          $ref: '#/components/schemas/Responses'
+        entity:
+          $ref: '#/components/schemas/Entity'
+    MaxDate:
+      type: string
+      format: date
+      description: >-
+        Maximum date of data returned in YYYY-MM-DD format. The date provided is inclusive.
+        Omitting this field will return the most recent available trend data.
+      example: '2018-01-31'
+      pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+      minLength: 10
+      maxLength: 10
+    MinDate:
+      type: string
+      format: date
+      description: >-
+        Minimum date of data returned in YYYY-MM-DD format. The date provided is inclusive.
+        Omitting this field will return the earliest available trend data.
+      example: '2018-01-31'
+      pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+      minLength: 10
+      maxLength: 10
+    Audience:
+      title: Audience
+      type: object
+      description: >-
+        The description of respondents considered in a request. Data in the response will be filtered
+        to only include respondents who match the audience described in this parameter.
+
+        The `match` field specifies respondents that selected one or more particular response options
+        for a question. The `and`, `or`, and `not` fields allow Boolean
+        logic to be applied to matches. These logic fields can be nested as necessary to create audiences.
+        See <a class="text-break" href="#sample-workflow-building-a-custom-audience">Workflow: Building a Custom Audience</a> for an
+        example.
+
+        The maximum number of conditions that can be used to build an audience in a single request is
+        20. This includes all nested conditions within `and`, `or`, and `not` fields.
+      oneOf:
+        - $ref: '#/components/schemas/AudienceMatch'
+        - type: array
+          title: and
+          description: >-
+            A list of audience definitions of which all must match.
+          items:
+            $ref: '#/components/schemas/Audience'
+        - type: array
+          title: or
+          description: >-
+            A list of audience definitions of which at least one must match.
+          items:
+            $ref: '#/components/schemas/Audience'
+        - type: object
+          title: not
+          description: >-
+            A list of audience definitions of which none must match.
+          allOf:
+          - $ref: '#/components/schemas/Audience'
+    AudienceMatch:
+      type: object
+      title: match
+      description: >-
+        A question ID and the valid responses for that question. The `response_ids`
+        are a list of IDs which the question must match one of in order for the response to be
+        included in the final aggregation.
+      example:
+        question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+        response_ids:
+          - '1'
+          - '2'
+      properties:
+        question_id:
+          $ref: '#/components/schemas/QuestionID'
+        response_ids:
+          type: array
+          description: >-
+            The list of IDs which the question must match one of.
+
+            Response IDs can be found from the [/surveys/syndicated/questions](#GET-getSurveysSyndicatedQuestions)
+            and [/surveys/syndicated/questions/{question_id}](#GET-getSurveysSyndicatedQuestionsByID)
+            endpoints under the `responses[]` array.
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/ResponseID'
+      required:
+        - question_id
+        - response_ids
+    Aggregation:
+      title: Aggregation
+      type: object
+      description: >-
+        Options for aggregating data. For calendar durations, sample for that
+        duration will be aggregated into a single data point. For example,
+        requesting data between "2018-01-01" and "2018-12-31" with the month interval
+        will return a data point for each month.
+
+        Each data point representing an interval will be timestamped with the start
+        date of that interval. The "week" interval starts on Monday, and the "all"
+        option will return a single data point aggregating all trend data.
+      example:
+        interval: month
+      properties:
+        interval:
+          type: string
+          description: >-
+            Interval to aggregate the data.
+          enum:
+            - day
+            - week
+            - month
+            - quarter
+            - year
+            - all
+          example: month
+      required:
+        - interval
+    BulkAggregation:
+      title: BulkAggregation
+      type: string
+      description: >-
+        Options for aggregating data. For calendar durations, sample for that
+        duration will be aggregated into a single data point. For example,
+        requesting data between "2018-01-01" and "2018-12-31" with the month interval
+        will return a data point for each month.
+
+        Each data point representing an interval will be timestamped with the start
+        date of that interval. The "week" interval starts on Monday, and the "all"
+        option will return a single data point aggregating all trend data.
+      enum:
+        - day
+        - week
+        - month
+        - quarter
+        - year
+      example: month
+    ScoreDataPoint:
+      title: Score Data Point
+      type: object
+      description: Data point associated with a score.
+      example: {
+        "date": "2025-11-14",
+        "score": {
+          "value": 43,
+        },
+        "total_n": 1550
+      }
+      properties:
+        date:
+          type: string
+          format: date
+          description: >-
+            Date of the sample in YYYY-MM-DD format. For interval aggregations,
+            this date represents the start date of that interval.
+          example: '2019-08-13'
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+          minLength: 10
+          maxLength: 10
+        score:
+          $ref: '#/components/schemas/ScoreDataPointValue'
+        total_n:
+          type: number
+          format: double
+          description: Weighted number of respondents for this data point.
+          minimum: 0
+    ScoreDataPointValue:
+      title: Score Data Point Value
+      type: object
+      description: Data point value associated with a score.
+      example: {
+        value: 43
+      }
+      properties:
+        value:
+          type: number
+          format: double
+          description: Calculated score.
+    TimeseriesDataPoint:
+      title: TimeseriesDataPoint
+      type: object
+      description: Data point associated with a single survey data trend.
+      example:
+        date: '2017-11-23'
+        responses:
+          - percent: 42.953760405946554
+            id: '1'
+            label: Very Favorable
+          - percent: 57.046239594053446
+            id: '2'
+            label: Somewhat Favorable
+        total_n: 1570
+      properties:
+        date:
+          type: string
+          format: date
+          description: >-
+            Date of the sample in YYYY-MM-DD format. For interval aggregations,
+            this date represents the start date of that interval.
+          example: '2019-08-13'
+          pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+          minLength: 10
+          maxLength: 10
+        total_n:
+          type: number
+          format: double
+          description: Weighted number of respondents for this data point.
+          minimum: 0
+        responses:
+          type: array
+          description: Individual data points associated with a specific response.
+          items:
+            $ref: '#/components/schemas/DataPoint'
+    DataPoint:
+      title: DataPoint
+      type: object
+      description: An individual data point representing a particular response.
+      example:
+        percent: 42.953760405946554
+        id: '2'
+        label: Somewhat Favorable
+      properties:
+        id:
+          $ref: '#/components/schemas/ResponseID'
+        label:
+          $ref: '#/components/schemas/ResponseLabel'
+        percent:
+          type: number
+          format: double
+          description: >-
+            Numeric representation of the value associated with a response. This is the weighted percentage
+            of respondents who chose the corresponding response to the requested question on the given date,
+            or the date range if aggregated over an interval.
+          minimum: 0
+          maximum: 100
+    Tokens:
+      type: object
+      example:
+        token_type: Bearer
+        expires_in: 3600
+        id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
+        refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      properties:
+        token_type:
+          type: string
+          description: The type of token received. Will be Bearer.
+          example: Bearer
+          default: Bearer
+        expires_in:
+          type: integer
+          description: The number of seconds until the token expires.
+          example: 3600
+          default: 3600
+          readOnly: true
+        refresh_token:
+          type: string
+          description: The refresh token to be used to retrieve a new JWT.
+        id_token:
+          type: string
+          description: The JWT token. Use this in the Authorization header in requests to other endpoints.
+    PostSurveysSyndicatedScoresInput:
+      type: object
+      additionalProperties: false
+      properties:
+        min_date:
+          $ref: '#/components/schemas/MinDate'
+        max_date:
+          $ref: '#/components/schemas/MaxDate'
+        audience:
+          $ref: '#/components/schemas/Audience'
+        aggregation:
+          $ref: '#/components/schemas/Aggregation'
+        score_id:
+          $ref: '#/components/schemas/ScoreID'
+        country_code:
+          $ref: '#/components/schemas/CountryCode'
+        entity_id:
+          title: Entity ID
+          type: string
+          description: >-
+            Entity ID to run the score against if an Entity ID is required.
+          example: avon
+      required:
+        - score_id
+        - country_code
+    PostScoresInput:
+      type: object
+      additionalProperties: false
+      properties:
+        data_source_id:
+          $ref: '#/components/schemas/DataSourceID'
+        min_date:
+          $ref: '#/components/schemas/MinDate'
+        max_date:
+          $ref: '#/components/schemas/MaxDate'
+        audience:
+          $ref: '#/components/schemas/Audience'
+        aggregation:
+          $ref: '#/components/schemas/Aggregation'
+        score_id:
+          $ref: '#/components/schemas/ScoreID'
+        country_code:
+          $ref: '#/components/schemas/CountryCode'
+        entity_id:
+          title: Entity ID
+          type: string
+          description: >-
+            Entity ID to run the score against if an Entity ID is required.
+          example: avon
+        component_ids:
+          type: array
+          description: >-
+            The component IDs to use when computing the score. Required for
+            scores whose metadata lists `components` (for example "Price
+            Surprise" and "Unavailability"). See
+            [/scores](#GET-getScores) to discover the components available for
+            a score.
+          items:
+            type: string
+          example:
+            - home_appliances
+      required:
+        - data_source_id
+        - score_id
+        - country_code
+    PostSurveysSyndicatedTimeseriesInput:
+      type: object
+      additionalProperties: false
+      properties:
+        min_date:
+          $ref: '#/components/schemas/MinDate'
+        max_date:
+          $ref: '#/components/schemas/MaxDate'
+        audience:
+          $ref: '#/components/schemas/Audience'
+        aggregation:
+          $ref: '#/components/schemas/Aggregation'
+        question_id:
+          title: Question ID
+          type: string
+          format: uuid
+          description: >-
+            The unique identifier for a question.
+
+            The question itself must have <em>fewer than 100 predefined responses.</em> You
+            can get the number of responses for a question from the
+            <a class="text-break" href="#GET-getSurveysSyndicatedQuestionsByID">/surveys/syndicated/questions/{question_id}</a>
+            endpoint.
+          example: a7ee637c-e5d1-4cf8-b484-8eb372f22941
+      required:
+        - question_id
+    PostResponsesInput:
+      type: object
+      additionalProperties: false
+      properties:
+        data_source_id:
+          $ref: '#/components/schemas/DataSourceID'
+        question_id:
+          $ref: '#/components/schemas/QuestionID'
+        min_date:
+          $ref: '#/components/schemas/MinDate'
+        max_date:
+          $ref: '#/components/schemas/MaxDate'
+        audience:
+          $ref: '#/components/schemas/Audience'
+        aggregation:
+          $ref: '#/components/schemas/Aggregation'
+      required:
+        - data_source_id
+        - question_id
+    PostAIResolveInput:
+      type: object
+      additionalProperties: false
+      properties:
+        text:
+          title: Text
+          type: string
+          description: Query text.
+          minLength: 1
+          maxLength: 1000
+          pattern: '^[^\0]+$'
+          example: What do women think of Cheerios?
+      required:
+        - text
+    PostSurveysSyndicatedTimeseriesBatchInput:
+      type: object
+      additionalProperties: false
+      properties:
+        country:
+          $ref: '#/components/schemas/CountryCode'
+        question_ids:
+          type: array
+          description: The unique identifiers for the questions to include in the report.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/QuestionID'
+        audiences:
+          type: object
+          description: >-
+            A map of audience names to audience definitions. Each named audience
+            will produce a separate trend in the report output. An empty audience
+            object `{}` represents all respondents. If omitted, the report
+            defaults to a single all-respondents trend.
+          additionalProperties:
+            $ref: '#/components/schemas/Audience'
+        min_date:
+          $ref: '#/components/schemas/MinDate'
+        max_date:
+          $ref: '#/components/schemas/MaxDate'
+        aggregation:
+          $ref: '#/components/schemas/BulkAggregation'
+      required:
+        - country
+        - question_ids
+        - aggregation
+    PostResponsesBulkInput:
+      type: object
+      additionalProperties: false
+      properties:
+        data_source_id:
+          $ref: '#/components/schemas/DataSourceID'
+        country:
+          $ref: '#/components/schemas/CountryCode'
+        question_ids:
+          type: array
+          description: The unique identifiers for the questions to include in the report.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/QuestionID'
+        audiences:
+          type: object
+          description: >-
+            A map of audience names to audience definitions. Each named audience
+            will produce a separate trend in the report output. An empty audience
+            object `{}` represents all respondents. If omitted, the report
+            defaults to a single all-respondents trend.
+          additionalProperties:
+            $ref: '#/components/schemas/Audience'
+        min_date:
+          $ref: '#/components/schemas/MinDate'
+        max_date:
+          $ref: '#/components/schemas/MaxDate'
+        aggregation:
+          $ref: '#/components/schemas/BulkAggregation'
+      required:
+        - data_source_id
+        - country
+        - question_ids
+        - aggregation
+    PostResponsesBulkOutput:
+      type: object
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: >-
+            The unique identifier for the bulk responses request. Use this ID
+            to poll the status of the report via the
+            [/responses/bulk/{request_id}](#GET-getResponsesBulkStatus)
+            endpoint.
+          example: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+    GetResponsesBulkStatusOutput:
+      type: object
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: The unique identifier for the bulk responses request.
+          example: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status:
+          type: string
+          description: The current status of the report request.
+          enum:
+            - processing
+            - complete
+            - error
+          example: complete
+        download_url:
+          type: string
+          format: uri
+          description: >-
+            URL to download the completed report. Only present when status is `complete`.
+          example: 'https://example.com/report.parquet'
+        expires_at:
+          type: string
+          format: date-time
+          description: >-
+            Expiration time of the download URL. Only present when status is `complete`.
+          example: '2025-01-01T12:00:00Z'
+    NamedScore:
+      title: NamedScore
+      type: object
+      description: >-
+        Selection of a single score, optionally bound to a specific entity and
+        subset of components, to include in a bulk scores report.
+      additionalProperties: false
+      properties:
+        score_id:
+          $ref: '#/components/schemas/ScoreID'
+        entity_id:
+          type: string
+          description: >-
+            Entity ID to run the score against if the score's entity type is
+            set. See [/entities](#GET-getEntities) to discover the entities
+            available for a country and data source.
+          example: nike
+        component_ids:
+          type: array
+          description: >-
+            The component IDs to use when computing the score. Required for
+            scores whose metadata lists `components` (for example "Price
+            Surprise" and "Unavailability"). See
+            [/scores](#GET-getScores) to discover the components available
+            for a score.
+          items:
+            type: string
+          example:
+            - home_appliances
+      required:
+        - score_id
+    PostScoresBulkInput:
+      type: object
+      additionalProperties: false
+      properties:
+        data_source_id:
+          $ref: '#/components/schemas/DataSourceID'
+        country:
+          $ref: '#/components/schemas/CountryCode'
+        scores:
+          type: object
+          description: >-
+            A map of caller-defined score names to score selections. Each named
+            score will appear as a separate series in the report output. Score
+            names must be unique within a request.
+          minProperties: 1
+          additionalProperties:
+            $ref: '#/components/schemas/NamedScore'
+        audiences:
+          type: object
+          description: >-
+            A map of audience names to audience definitions. Each named
+            audience will produce a separate series in the report output. An
+            empty audience object `{}` represents all respondents. If omitted,
+            the report defaults to a single all-respondents series.
+          additionalProperties:
+            $ref: '#/components/schemas/Audience'
+        min_date:
+          $ref: '#/components/schemas/MinDate'
+        max_date:
+          $ref: '#/components/schemas/MaxDate'
+        aggregation:
+          $ref: '#/components/schemas/BulkAggregation'
+      required:
+        - data_source_id
+        - country
+        - scores
+        - aggregation
+    PostScoresBulkOutput:
+      type: object
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: >-
+            The unique identifier for the bulk scores request. Use this ID
+            to poll the status of the report via the
+            [/scores/bulk/{request_id}](#GET-getScoresBulkStatus)
+            endpoint.
+          example: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+    GetScoresBulkStatusOutput:
+      type: object
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: The unique identifier for the bulk scores request.
+          example: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status:
+          type: string
+          description: The current status of the report request.
+          enum:
+            - processing
+            - complete
+            - error
+          example: complete
+        download_url:
+          type: string
+          format: uri
+          description: >-
+            URL to download the completed report. Only present when status is `complete`.
+          example: 'https://example.com/report.parquet'
+        expires_at:
+          type: string
+          format: date-time
+          description: >-
+            Expiration time of the download URL. Only present when status is `complete`.
+          example: '2025-01-01T12:00:00Z'
+  headers:
+    X-Rate-Limit-Limit:
+      description: The rate limit ceiling that is applicable for the current request.
+      schema:
+        type: integer
+        example: 200
+    X-Rate-Limit-Remaining:
+      description: The number of remaining requests in the current rate limit period.
+      schema:
+        type: integer
+        example: 179
+    X-Rate-Limit-Reset:
+      description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
+      schema:
+        type: integer
+        example: 1633538752414
+  responses:
+    PostAuthTokenOutput:
+      description: Auth Tokens
+      content:
+        application/json:
+          examples:
+            tokens:
+              $ref: '#/components/examples/Tokens'
+          schema:
+            $ref: '#/components/schemas/Tokens'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetQuestionByIDOutput:
+      description: Single Question
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Question'
+          examples:
+            question:
+              $ref: '#/components/examples/Question'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetDataSourceQuestionOutput:
+      description: Single Question
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataSourceQuestion'
+          examples:
+            question:
+              $ref: '#/components/examples/DataSourceQuestion'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetQuestionsOutput:
+      description: Questions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+              questions:
+                type: array
+                description: A list of questions with data available.
+                items:
+                  $ref: '#/components/schemas/Question'
+          examples:
+            questions:
+              $ref: '#/components/examples/Questions'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetDataSourcesOutput:
+      description: Data Sources
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - data_sources
+            properties:
+              data_sources:
+                type: array
+                description: The data sources the caller has access to.
+                items:
+                  $ref: '#/components/schemas/DataSource'
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+          examples:
+            Example:
+              description: Data Sources
+              value:
+                data_sources:
+                  - id: 00de2081-e013-411d-823c-cd483283e38d
+                    name: Daily Tracker
+                    countries:
+                      - code: us
+                        label: United States
+                      - code: de
+                        label: Germany
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetDataSourceQuestionsOutput:
+      description: Questions
+      content:
+        application/json:
+          schema:
+            type: object
+            description: A paginated list of questions across accessible data sources.
+            required:
+              - questions
+            properties:
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+              questions:
+                type: array
+                description: A list of questions with data available.
+                items:
+                  $ref: '#/components/schemas/DataSourceQuestion'
+          examples:
+            questions:
+              $ref: '#/components/examples/DataSourceQuestions'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetCategoriesOutput:
+      description: Categories
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              categories:
+                type: array
+                description: An array of question categories.
+                items:
+                  $ref: '#/components/schemas/Category'
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+          examples:
+            Example:
+              description: Categories
+              value:
+                categories:
+                  - id: brand
+                    label: Brand
+                  - id: demographic
+                    label: Demographic
+                pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetCountriesOutput:
+      description: Countries
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              countries:
+                type: array
+                description: A list of countries with questions available.
+                uniqueItems: true
+                minItems: 0
+                items:
+                  $ref: '#/components/schemas/Country'
+          examples:
+            Example:
+              description: Countries
+              value:
+                countries:
+                  - code: us
+                    label: United States
+                  - code: de
+                    label: Germany
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetEntitiesOutput:
+      description: Entities
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              entities:
+                type: array
+                description: A list of entities tracked in our syndicated surveys.
+                items:
+                  $ref: '#/components/schemas/Entity'
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+          examples:
+            Example:
+              description: Entities
+              value:
+                entities:
+                  - id: autotrader
+                    label: Autotrader
+                  - id: A000148
+                    label: Jake Auchincloss
+                pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetScoresOutput:
+      description: Scores
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              scores:
+                type: array
+                description: A list of countries the score is valid in.
+                items:
+                  $ref: '#/components/schemas/Score'
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+          examples:
+            Example:
+              description: Score
+              value: {
+                "scores": [
+                  {
+                    "id": "7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5",
+                    "label": "Net Promoter Score",
+                    "description": "Net Promoter Score is the NPS Promoters score minus the NPS Detractors score.",
+                    "entity_type": {
+                      "id": "brand",
+                      "label": "Brand"
+                    }
+                  },
+                  {
+                    "id": "48ef9961-1dc8-42d1-b03c-c480681bc732",
+                    "label": "Index of Consumer Sentiment (ICS)",
+                    "description": "The Index of Consumer Sentiment (ICS) is a composite score that measures consumer confidence based on economic outlook questions."
+                  }
+                ],
+                "pagination_token": "eyJxdWVyeSI6ImRvZ3MifQ=="
+              }
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetScoreCountriesOutput:
+      description: Score Countries
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              countries:
+                type: array
+                description: A list of scores for syndicated surveys.
+                items:
+                  $ref: '#/components/schemas/Country'
+          examples:
+            Example:
+              description: Score
+              value: {
+                "countries": [
+                  {
+                    "code": "us",
+                    "label": "United Stated"
+                  },
+                  {
+                    "code": "de",
+                    "label": "Germany"
+                  }
+                ]
+              }
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetScoreDataSourcesOutput:
+      description: Score Data Sources
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data_sources:
+                type: array
+                description: >-
+                  The data sources the score is available in, along with the
+                  countries the score can be calculated in for each data source.
+                items:
+                  $ref: '#/components/schemas/DataSource'
+          examples:
+            Example:
+              description: Score Data Sources
+              value: {
+                "data_sources": [
+                  {
+                    "id": "00de2081-e013-411d-823c-cd483283e38d",
+                    "name": "Daily Tracker",
+                    "countries": [
+                      {
+                        "code": "us",
+                        "label": "United States"
+                      },
+                      {
+                        "code": "de",
+                        "label": "Germany"
+                      }
+                    ]
+                  }
+                ]
+              }
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    PostSurveysSyndicatedScoresOutput:
+      description: Score Data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              scores:
+                type: array
+                description: An array of individual scores.
+                items:
+                  $ref: '#/components/schemas/ScoreDataPoint'
+    PostScoresOutput:
+      description: Score Data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              scores:
+                type: array
+                description: An array of individual scores.
+                minItems: 0
+                items:
+                  $ref: '#/components/schemas/ScoreDataPoint'
+    PostSurveysSyndicatedTimeseriesOutput:
+      description: Trend Data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                description: An array of individual data points.
+                items:
+                  $ref: '#/components/schemas/TimeseriesDataPoint'
+          examples:
+            DataPoints:
+              description: Trend Data
+              value:
+                data:
+                  - date: '2017-11-23'
+                    responses:
+                      - percent: 42.953760405946554
+                        id: '1'
+                        label: 'Very Favorable'
+                      - percent: 57.046239594053446
+                        id: '2'
+                        label: 'Somewhat Favorable'
+                    total_n: 1570
+    PostResponsesOutput:
+      description: Responses Data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                description: An array of individual data points.
+                items:
+                  $ref: '#/components/schemas/TimeseriesDataPoint'
+          example:
+            DataPoints:
+              description: Responses Data
+              value:
+                data:
+                  - date: '2017-11-23'
+                    responses:
+                      - percent: 42.953760405946554
+                        id: '1'
+                        label: 'Very Favorable'
+                      - percent: 57.046239594053446
+                        id: '2'
+                        label: 'Somewhat Favorable'
+                    total_n: 1570
+    PostAIResolveOutput:
+      description: The response for resolving a query to a summary.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              summary:
+                description: A summary of the data used to answer a query.
+                type: string
+            required:
+              - summary
+          examples:
+            Response:
+              description: Response to a query
+              value:
+                summary: Here’s a summary of how women in the United States feel about Cheerios...
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InternalServerError:
+              description: Internal Server Error
+              value:
+                code: 500
+                status: Internal Server Error
+                errors:
+                  - a server error occurred
+    BadRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            BadRequest:
+              description: Multiple Errors
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                  - 'invalid value "uuu" for field "country_code": must be 2 characters'
+                  - 'invalid value "not base64" for field "pagination_token": must be valid base64'
+            PageSize:
+              description: Invalid Page Size
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                  - 'invalid value "1000" for field "page_size": must be maximum 100'
+    InvalidQuestionIDError:
+      description: Invalid Question ID
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InvalidQuestionID:
+              description: Invalid Question ID
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                  - Invalid question id
+    NotFoundError:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            NotFound:
+              description: Not Found
+              value:
+                code: 404
+                status: Not Found
+                errors:
+                  - Not Found
+    InvalidCredentialsError:
+      description: Invalid Credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InvalidCredentials:
+              description: Invalid Credentials
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                  - invalid credentials
+            InvalidRefreshToken:
+              description: Invalid Refresh Token
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                  - invalid or expired refresh token
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            Forbidden:
+              description: Forbidden
+              value:
+                code: 403
+                status: Forbidden
+                errors:
+                  - missing necessary claims
+    PostResponsesBulkOutput:
+      description: Bulk Responses Request Submitted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PostResponsesBulkOutput'
+          examples:
+            Example:
+              $ref: '#/components/examples/PostResponsesBulkOutput'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetResponsesBulkStatusOutput:
+      description: Bulk Responses Request Status
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetResponsesBulkStatusOutput'
+          examples:
+            Processing:
+              $ref: '#/components/examples/GetResponsesBulkStatusOutputProcessing'
+            Complete:
+              $ref: '#/components/examples/GetResponsesBulkStatusOutputComplete'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    PostScoresBulkOutput:
+      description: Bulk Scores Request Submitted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PostScoresBulkOutput'
+          examples:
+            Example:
+              $ref: '#/components/examples/PostScoresBulkOutput'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetScoresBulkStatusOutput:
+      description: Bulk Scores Request Status
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetScoresBulkStatusOutput'
+          examples:
+            Processing:
+              $ref: '#/components/examples/GetScoresBulkStatusOutputProcessing'
+            Complete:
+              $ref: '#/components/examples/GetScoresBulkStatusOutputComplete'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+  securitySchemes:
+    Basic:
+      type: http
+      scheme: basic
+      description: Username and password credentials for initial authentication.
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer header authentication for performing regular requests.
+    RefreshToken:
+      type: http
+      scheme: bearer
+      description: Refresh Token bearer header authentication for renewing tokens.
+  parameters:
+    country_code:
+      name: country_code
+      in: query
+      required: true
+      description: >-
+        The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+        country code used to filter results.
+
+        The available countries can be retrieved from the
+        [/surveys/syndicated/countries](#GET-getSurveysSyndicatedCountries)
+        endpoint.
+      schema:
+        $ref: '#/components/schemas/CountryCode'
+    path_country_code:
+      name: country_code
+      in: path
+      required: true
+      description: >-
+        The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+        country code to retrieve questions for.
+
+        The available countries can be retrieved from the
+        [/surveys/syndicated/countries](#GET-getSurveysSyndicatedCountries)
+        endpoint.
+      schema:
+        $ref: '#/components/schemas/CountryCode'
+    pagination_token:
+      name: pagination_token
+      in: query
+      required: false
+      description: >-
+        Pagination token returned from previous calls to an endpoint. When provided,
+        no other query parameters can be specified.
+
+        For more details, please see the [Pagination](#pagination) section.
+      schema:
+        $ref: '#/components/schemas/PaginationToken'
+    category_id:
+      name: category_id
+      in: query
+      required: false
+      description: >-
+        A category ID to filter results.
+
+        Available categories can be retrieved from the
+        [/surveys/syndicated/categories](#GET-getSurveysSyndicatedCategories) endpoint.
+      schema:
+        type: string
+        pattern: '^[a-zA-Z]+'
+        minLength: 1
+        maxLength: 100
+        example: brand
+    entity_id:
+      name: entity_id
+      in: query
+      required: false
+      description: >-
+        An entity ID to filter results.
+
+        Available entities can be retrieved from the
+        [/surveys/syndicated/entities](#GET-getSurveysSyndicatedEntities) endpoint.
+      schema:
+        type: string
+        example: morning_consult
+        pattern: '^[A-Za-z0-9_]+'
+        minLength: 1
+        maxLength: 100
+    entity_type_id:
+      name: entity_type_id
+      in: query
+      required: false
+      description: >-
+        An entity type ID to filter results.
+      schema:
+        type: string
+        example: favorability
+        pattern: '^[A-Za-z0-9_]+'
+        minLength: 1
+        maxLength: 100
+    data_source_id:
+      name: data_source_id
+      in: path
+      required: true
+      description: The data source UUID to retrieve questions for.
+      schema:
+        $ref: '#/components/schemas/DataSourceID'
+    query:
+      name: query
+      in: query
+      required: false
+      description: >-
+        Terms to search. This parameter supports partial matching,
+        normalization, and other common search features.
+      schema:
+        type: string
+        example: Morning Consult
+        minLength: 3
+        maxLength: 100
+    page_size:
+      name: page_size
+      in: query
+      required: false
+      description: >-
+        The number of results to return per request. Additional results
+        past the page size can be retrieved using a pagination token,
+        if one is returned in the response.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        format: int32
+        default: 50
+        example: 50
+    data_source_id_query:
+      name: data_source_id
+      in: query
+      required: false
+      description: >-
+        A data source UUID to filter results. When omitted, results include
+        records across every data source you have access to.
+      schema:
+        type: string
+        format: uuid
+        example: 00de2081-e013-411d-823c-cd483283e38d
+  examples:
+    Tokens:
+      description: Auth Tokens
+      value:
+        token_type: Bearer
+        expires_in: 3600
+        id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
+        refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
+    Question:
+      description: Question
+      value:
+        id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
+        label: Avon Usage Frequency
+        text: How often do you use or purchase something from the following? --- Avon
+        country:
+          code: fr
+          label: France
+        category:
+          id: brand
+          label: Brand
+        responses:
+          - id: '1'
+            label: Several times a day
+          - id: '2'
+            label: About once a day
+          - id: '3'
+            label: A few times a week
+          - id: '4'
+            label: About once a week
+          - id: '5'
+            label: About once a month or less often
+          - id: '6'
+            label: I do not have an account or do not use
+        entity:
+          id: avon
+          label: Avon
+    DataSourceQuestion:
+      description: Question
+      value:
+        id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
+        label: Avon Usage Frequency
+        text: How often do you use or purchase something from the following? --- Avon
+        data_source_id: 00de2081-e013-411d-823c-cd483283e38d
+        country:
+          code: fr
+          label: France
+        category:
+          id: brand
+          label: Brand
+        responses:
+          - id: '1'
+            label: Several times a day
+          - id: '2'
+            label: About once a day
+          - id: '3'
+            label: A few times a week
+          - id: '4'
+            label: About once a week
+          - id: '5'
+            label: About once a month or less often
+          - id: '6'
+            label: I do not have an account or do not use
+        entity:
+          id: avon
+          label: Avon
+    Questions:
+      description: Questions
+      value:
+        pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
+        questions:
+        - id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
+          label: Avon Usage Frequency
+          text: How often do you use or purchase something from the following? --- Avon
+          country:
+            code: fr
+            label: France
+          category:
+            id: brand
+            label: Brand
+          responses:
+            - id: '1'
+              label: Several times a day
+            - id: '2'
+              label: About once a day
+            - id: '3'
+              label: A few times a week
+            - id: '4'
+              label: About once a week
+            - id: '5'
+              label: About once a month or less often
+            - id: '6'
+              label: I do not have an account or do not use
+          entity:
+            id: avon
+            label: Avon
+    DataSourceQuestions:
+      description: Questions
+      value:
+        pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
+        questions:
+        - id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
+          label: Avon Usage Frequency
+          text: How often do you use or purchase something from the following? --- Avon
+          data_source_id: 00de2081-e013-411d-823c-cd483283e38d
+          country:
+            code: fr
+            label: France
+          category:
+            id: brand
+            label: Brand
+          responses:
+            - id: '1'
+              label: Several times a day
+            - id: '2'
+              label: About once a day
+            - id: '3'
+              label: A few times a week
+            - id: '4'
+              label: About once a week
+            - id: '5'
+              label: About once a month or less often
+            - id: '6'
+              label: I do not have an account or do not use
+          entity:
+            id: avon
+            label: Avon
+    PostSyndicatedScoresInput:
+      value: {
+        "min_date": "2025-01-01",
+        "max_date": "2025-01-31",
+        "audience": {
+          "and": [
+            {
+              "match": {
+                "question_id": "29433f2b-3ea0-4214-ae8f-9ad09549c082",
+                "response_ids": [
+                  "1",
+                  "2"
+                ]
+              }
+            },
+            {
+              "or": [
+                {
+                  "match": {
+                    "question_id": "29433f2b-3ea0-4214-ae8f-9ad09549c082",
+                    "response_ids": [
+                      "1",
+                      "2"
+                    ]
+                  }
+                },
+                {
+                  "match": {
+                    "question_id": "29433f2b-3ea0-4214-ae8f-9ad09549c082",
+                    "response_ids": [
+                      "1",
+                      "2"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "not": {
+                "match": {
+                  "question_id": "29433f2b-3ea0-4214-ae8f-9ad09549c082",
+                  "response_ids": [
+                    "1",
+                    "2"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "score_id": "48ef9961-1dc8-42d1-b03c-c480681bc732",
+        "aggregation": {
+          "interval": "month"
+        }
+      }
+    PostSyndicatedScoresInputWithEntity:
+      value:
+        min_date: '2025-01-01'
+        max_date: '2025-01-31'
+        score_id: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
+        entity_id: avon
+    PostScoresInput:
+      value: {
+        "data_source_id": "00de2081-e013-411d-823c-cd483283e38d",
+        "min_date": "2025-01-01",
+        "max_date": "2025-01-31",
+        "audience": {
+          "and": [
+            {
+              "match": {
+                "question_id": "29433f2b-3ea0-4214-ae8f-9ad09549c082",
+                "response_ids": ["1", "2"]
+              }
+            }
+          ]
+        },
+        "score_id": "48ef9961-1dc8-42d1-b03c-c480681bc732",
+        "country_code": "us",
+        "aggregation": {
+          "interval": "month"
+        }
+      }
+    PostScoresInputWithEntity:
+      value:
+        data_source_id: 00de2081-e013-411d-823c-cd483283e38d
+        min_date: '2025-01-01'
+        max_date: '2025-01-31'
+        score_id: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
+        country_code: us
+        entity_id: avon
+    PostSyndicatedTimeseriesInput:
+      value:
+        min_date: '2018-01-01'
+        max_date: '2018-01-31'
+        audience:
+          and:
+            - match:
+                question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+                response_ids:
+                  - '1'
+                  - '2'
+            - or:
+              - match:
+                  question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+                  response_ids:
+                    - '1'
+                    - '2'
+              - match:
+                  question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+                  response_ids:
+                    - '1'
+                    - '2'
+            - not:
+                match:
+                  question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+                  response_ids:
+                    - '1'
+                    - '2'
+        question_id: a7ee637c-e5d1-4cf8-b484-8eb372f22941
+        aggregation:
+          interval: month
+    PostResponsesInput:
+      value:
+        data_source_id: 00de2081-e013-411d-823c-cd483283e38d
+        question_id: a7ee637c-e5d1-4cf8-b484-8eb372f22941
+        min_date: '2018-01-01'
+        max_date: '2018-01-31'
+        audience:
+          and:
+            - match:
+                question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+                response_ids:
+                  - '1'
+                  - '2'
+        aggregation:
+          interval: month
+    PostAIResolveInput:
+      value:
+        text: What do women think of Cheerios?
+    PostSurveysSyndicatedTimeseriesBatchInput:
+      value:
+        country: us
+        question_ids:
+          - a7ee637c-e5d1-4cf8-b484-8eb372f22941
+          - 29433f2b-3ea0-4214-ae8f-9ad09549c082
+        audiences:
+          women:
+            match:
+              question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+              response_ids:
+                - '2'
+        min_date: '2024-01-01'
+        max_date: '2024-12-31'
+        aggregation: month
+    PostResponsesBulkInput:
+      value:
+        data_source_id: 00de2081-e013-411d-823c-cd483283e38d
+        country: us
+        question_ids:
+          - a7ee637c-e5d1-4cf8-b484-8eb372f22941
+          - 29433f2b-3ea0-4214-ae8f-9ad09549c082
+        audiences:
+          women:
+            match:
+              question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+              response_ids:
+                - '2'
+        min_date: '2024-01-01'
+        max_date: '2024-12-31'
+        aggregation: month
+    PostResponsesBulkOutput:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+    GetResponsesBulkStatusOutputProcessing:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status: processing
+    GetResponsesBulkStatusOutputComplete:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status: complete
+        download_url: 'https://example.com/report.parquet'
+        expires_at: '2025-01-01T12:00:00Z'
+    PostScoresBulkInput:
+      value:
+        data_source_id: 00de2081-e013-411d-823c-cd483283e38d
+        country: us
+        scores:
+          nike_net_favorability:
+            score_id: 6558ddce-af98-4867-bb84-3bf99342968c
+            entity_id: nike
+        audiences:
+          women:
+            match:
+              question_id: 29433f2b-3ea0-4214-ae8f-9ad09549c082
+              response_ids:
+                - '2'
+        min_date: '2024-01-01'
+        max_date: '2024-12-31'
+        aggregation: month
+    PostScoresBulkOutput:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+    GetScoresBulkStatusOutputProcessing:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status: processing
+    GetScoresBulkStatusOutputComplete:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status: complete
+        download_url: 'https://example.com/report.parquet'
+        expires_at: '2025-01-01T12:00:00Z'
+security:
+  - JWT: []
+x-dd-extra-monitors:
+  - |
+    {
+      "name": "Henosis: MCP internal service errors on env:{{environment}}",
+      "type": "trace-analytics alert",
+      "query": "trace-analytics(\"service:henosis env:{{environment}} operation_name:http.request @span.kind:server @mcp.internal_error:true\").index(\"trace-search\", \"djm-search\").rollup(\"count\").last(\"5m\") > 0",
+      "message": "Henosis MCP returned internal service errors in the last 5 minutes.\n@pagerduty-henosis-mcp",
+      "tags": [
+        "henosis",
+        "mcp"
+      ],
+      "options": {
+        "thresholds": {
+          "critical": 0
+        },
+        "notify_no_data": false,
+        "include_tags": true
+      },
+      "priority": 3
+    }

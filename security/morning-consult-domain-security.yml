@@ -1,0 +1,28 @@
+generated: '2026-08-01'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: morningconsult.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct  3 18:44:46 2026 GMT
+  hsts: true
+  hsts_max_age: 31536000
+- host: api.morningconsult.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Sep 20 01:36:09 2026 GMT
+  hsts: null
+domains:
+- domain: morningconsult.com
+  dnssec: false
+  caa:
+  - 0 issuewild "godaddy.com"
+  - 0 issuewild "letsencrypt.org"
+  - 0 issuewild "pki.goog; cansignhttpexchanges=yes"
+  - 0 issuewild "ssl.com"
+  - 0 issuewild "starfieldtech.com"
+  - 0 issue "amazonaws.com"
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine

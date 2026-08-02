@@ -1,0 +1,189 @@
+generated: '2026-08-01'
+method: derived
+source: openapi/morning-consult-openapi-original.yml
+enriched_from: https://api.morningconsult.com/docs/#concepts
+summary: >-
+  The Morning Consult data model is a survey-measurement graph, not a CRUD resource
+  graph. A DataSource (e.g. the Daily Tracker) supports a set of Countries. Within a
+  data source and country, a Question carries a Category, an optional Entity (the brand
+  or subject it asks about) and a fixed set of Responses (the answer options a
+  respondent could pick). Data requests project that structure over time: a Response
+  becomes a DataPoint inside a TimeseriesDataPoint, and a Score — a named metric such
+  as Net Favorability, optionally composed of components and bound to an entity type —
+  becomes a ScoreDataPoint. Audiences are recursive boolean expressions over the same
+  question/response IDs, which is why a question is simultaneously a thing you measure
+  and a thing you filter by.
+id_conventions:
+  format: UUID
+  ids:
+  - field: data_source_id
+    entity: DataSource
+    validation: must be a valid UUID
+  - field: question_id
+    entity: Question
+    validation: must be a valid UUID; stable forever, safe to cache permanently
+  - field: score_id
+    entity: Score
+  - field: entity_id
+    entity: Entity
+  - field: response_id
+    entity: Response
+  - field: request_id
+    entity: BulkRequest
+  - field: country_code
+    entity: Country
+    validation: 2 characters
+entities:
+- name: DataSource
+  schema: '#/components/schemas/DataSource'
+  description: A data source and the countries it supports. The Daily Tracker is the
+    data source that backs the legacy syndicated endpoints.
+  fields: [id, name, countries]
+  discovered_by: getDataSources
+- name: Country
+  schema: '#/components/schemas/Country'
+  description: A country, identified by a two-character code.
+  fields: [code, label]
+  discovered_by: getDataSources
+- name: Category
+  schema: '#/components/schemas/Category'
+  description: A type of question.
+  fields: [id, label]
+  discovered_by: getCategories
+- name: Entity
+  schema: '#/components/schemas/Entity'
+  description: A particular subject a question may refer to, such as a specific brand.
+  fields: [id, label]
+  discovered_by: getEntities
+- name: EntityType
+  schema: '#/components/schemas/EntityType'
+  description: An entity type, such as brand or favorability.
+  fields: [id, label]
+- name: Question
+  schema: '#/components/schemas/Question'
+  description: A survey question and its metadata, scoped to a country.
+  fields: [id, label, text, country, category, responses, entity]
+  discovered_by: getDataSourceQuestions
+- name: DataSourceQuestion
+  schema: '#/components/schemas/DataSourceQuestion'
+  description: A question resolved within an explicit data source (the current,
+    data-source-aware shape).
+  fields: [id, label, text, data_source_id, country, category, responses, entity]
+  discovered_by: getDataSourceQuestion
+- name: Response
+  schema: '#/components/schemas/Response'
+  description: A single response option for a question.
+  fields: [id, label]
+- name: Score
+  schema: '#/components/schemas/Score'
+  description: A named metric computed from survey data, optionally composed of
+    components and bound to an entity type.
+  fields: [id, label, description, entity_type, components]
+  discovered_by: getScores
+- name: NamedScore
+  schema: '#/components/schemas/NamedScore'
+  description: A selection of one score, optionally bound to an entity and a subset of
+    components — the request-side counterpart of Score.
+  fields: [score_id, entity_id, component_ids]
+- name: Audience
+  schema: '#/components/schemas/Audience'
+  description: A recursive boolean expression over question/response matches that
+    filters which respondents are counted. Maximum 20 conditions per request.
+  fields: [match, and, or, not]
+- name: TimeseriesDataPoint
+  schema: '#/components/schemas/TimeseriesDataPoint'
+  description: One interval of aggregated question responses.
+  fields: [date, total_n, responses]
+- name: DataPoint
+  schema: '#/components/schemas/DataPoint'
+  description: The percentage of an audience that selected one response option in an
+    interval.
+  fields: [id, label, percent]
+- name: ScoreDataPoint
+  schema: '#/components/schemas/ScoreDataPoint'
+  description: One interval of a computed score.
+  fields: [date, score, total_n]
+- name: BulkRequest
+  schema: '#/components/schemas/PostResponsesBulkOutput'
+  description: An asynchronous Data Bridge job; poll its request_id until a Parquet
+    download is available.
+  fields: [request_id]
+relationships:
+- from: DataSource
+  to: Country
+  kind: has_many
+  via: countries
+  evidence: DataSource.countries is an array of $ref Country
+- from: Question
+  to: Country
+  kind: belongs_to
+  via: country
+  evidence: Question.country $ref Country
+- from: Question
+  to: Category
+  kind: belongs_to
+  via: category
+  evidence: Question.category $ref Category
+- from: Question
+  to: Entity
+  kind: has_one
+  via: entity
+  evidence: Question.entity $ref Entity
+- from: Question
+  to: Response
+  kind: has_many
+  via: responses
+  evidence: Question.responses $ref Responses (array of Response)
+- from: DataSourceQuestion
+  to: DataSource
+  kind: belongs_to
+  via: data_source_id
+  evidence: id-reference field data_source_id
+- from: Score
+  to: EntityType
+  kind: has_one
+  via: entity_type
+  evidence: Score.entity_type $ref EntityType
+- from: Score
+  to: DataSource
+  kind: has_many
+  via: getScoreDataSources
+  evidence: GET /scores/{score_id}/data_sources returns the data sources a score is
+    available in
+- from: NamedScore
+  to: Score
+  kind: belongs_to
+  via: score_id
+  evidence: id-reference field score_id
+- from: NamedScore
+  to: Entity
+  kind: belongs_to
+  via: entity_id
+  evidence: id-reference field entity_id
+- from: TimeseriesDataPoint
+  to: DataPoint
+  kind: has_many
+  via: responses
+  evidence: TimeseriesDataPoint.responses is an array of $ref DataPoint
+- from: DataPoint
+  to: Response
+  kind: belongs_to
+  via: id
+  evidence: DataPoint.id $ref ResponseID
+- from: ScoreDataPoint
+  to: Score
+  kind: belongs_to
+  via: score
+  evidence: ScoreDataPoint.score $ref ScoreDataPointValue, requested by score_id
+- from: Audience
+  to: Question
+  kind: belongs_to
+  via: AudienceMatch.question_id
+  evidence: An audience match names a question and the response IDs to match on
+- from: Audience
+  to: Response
+  kind: has_many
+  via: AudienceMatch.response_ids
+  evidence: An audience match selects one or more response IDs of that question
+schema_count: 42
+render: null

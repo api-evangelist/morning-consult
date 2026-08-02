@@ -1,0 +1,22 @@
+generated: '2026-08-01'
+method: derived
+source: openapi/morning-consult-openapi-original.yml + https://api.morningconsult.com/docs/#guides
+note: >-
+  Native Arazzo workflows authored from Morning Consult's own published guides. Every
+  operationId used exists verbatim in the harvested OpenAPI.
+workflows:
+- file: morning-consult-brand-trendline.yml
+  workflowId: brand-trendline
+  title: Morning Consult — brand trendline
+  summary: Authenticate, resolve a data source, entity and question, then pull the
+    aggregated response timeseries.
+- file: morning-consult-compute-score.yml
+  workflowId: compute-score
+  title: Morning Consult — compute a score
+  summary: Discover a score, confirm its data sources, bind it to a brand entity, and
+    request the score timeseries.
+- file: morning-consult-bulk-data-bridge.yml
+  workflowId: bulk-responses-load
+  title: Morning Consult — bulk Data Bridge load
+  summary: Submit an asynchronous bulk responses job and poll it to completion for the
+    Parquet result.

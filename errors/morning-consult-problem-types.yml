@@ -1,0 +1,157 @@
+generated: '2026-08-01'
+method: derived
+source: openapi/morning-consult-openapi-original.yml
+enriched_from: https://api.morningconsult.com/docs/#handling-errors
+format: custom-json
+rfc9457: false
+envelope:
+  media_type: application/json
+  schema: '#/components/schemas/Error'
+  fields:
+    code: Numeric HTTP status code (integer, 100-599)
+    status: Text description of the HTTP status code
+    errors: Array of specific error message strings — one entry per validation failure
+  note: >-
+    Morning Consult does NOT use application/problem+json. There is no `type` URI and
+    no per-error machine code; the discriminator an agent can act on is the HTTP status
+    plus the free-text strings in `errors[]`, which name the offending field.
+support_contact: api-support@morningconsult.com
+status_classes:
+- status: 400
+  title: Bad Request
+  remediation: >-
+    Resolvable by changing your query parameters or request body. The errors[] array
+    names the offending field and the constraint it violated.
+  source: docs error table
+- status: 401
+  title: Unauthorized
+  remediation: >-
+    Authentication is not being provided correctly. Review the authentication docs and
+    ensure a valid, unexpired JWT is sent in the Authorization header.
+  source: docs error table
+- status: 403
+  title: Forbidden
+  remediation: >-
+    The caller's JWT is missing the necessary claims, or the requested resource / data
+    source is not part of the subscription.
+  source: docs error table + openapi ForbiddenError
+- status: 404
+  title: Not Found
+  remediation: The requested resource or data source is not available to the caller.
+  source: docs error table + openapi NotFoundError
+- status: 429
+  title: Too Many Requests
+  remediation: >-
+    Request rate has exceeded a bucket limit. Back off using X-Rate-Limit-Reset (UTC
+    epoch milliseconds) before retrying.
+  source: docs error table
+  note: >-
+    429 is documented in the docs error table but is NOT declared as a response on any
+    operation in the OpenAPI — a spec/documentation divergence worth reporting upstream.
+- status: 500
+  title: Internal Server Error
+  remediation: Internal error; retry, and contact api-support@morningconsult.com if it
+    persists.
+  source: docs error table + openapi InternalServerError
+problems:
+- status: 400
+  title: Bad Request
+  name: BadRequestError
+  detail: Field-level validation failure; one errors[] entry per invalid field.
+  examples:
+  - 'invalid value "uuu" for field "country_code": must be 2 characters'
+  - 'invalid value "not base64" for field "pagination_token": must be valid base64'
+  - 'invalid value "1000" for field "page_size": must be maximum 100'
+  - 'invalid value "foo" for field "question_id": must be a valid UUID'
+  - 'invalid value "not-a-uuid" for field "data_source_id": must be a valid UUID'
+  source_operations:
+  - getCategories
+  - getDataSources
+  - getEntities
+  - getDataSourceQuestions
+  - getDataSourceQuestion
+  - getScores
+  - getScoreDataSources
+  - postScores
+  - postResponses
+  - postResponsesBulk
+  - getResponsesBulkStatus
+  - postScoresBulk
+  - getScoresBulkStatus
+  - postAIResolve
+  - postAuthToken
+  - getSurveysSyndicatedCategories
+  - getSurveysSyndicatedEntities
+  - getSurveysSyndicatedQuestions
+  - getSurveysSyndicatedQuestionsByID
+  - getSurveysSyndicatedScores
+  - postSurveysSyndicatedScores
+  - getSurveysSyndicatedScoreCountries
+  - postSurveysSyndicatedTimeseries
+  - postSurveysSyndicatedTimeseriesBatch
+  - getSurveysSyndicatedTimeseriesBatchStatus
+- status: 400
+  title: Invalid Question ID
+  name: InvalidQuestionIDError
+  detail: The supplied question_id is not a question available in this data source and
+    country.
+  examples:
+  - Invalid question id
+  source_operations:
+  - getSurveysSyndicatedQuestionsByID
+  - getDataSourceQuestion
+- status: 400
+  title: Invalid Credentials
+  name: InvalidCredentialsError
+  detail: The Basic credentials or the refresh token presented to POST /auth/token were
+    rejected.
+  examples:
+  - invalid credentials
+  - invalid or expired refresh token
+  source_operations:
+  - postAuthToken
+- status: 403
+  title: Forbidden
+  name: ForbiddenError
+  detail: The JWT is valid but lacks the claims required for this operation — typically
+    a bulk / Data Bridge entitlement.
+  examples:
+  - missing necessary claims
+  source_operations:
+  - postResponsesBulk
+  - getResponsesBulkStatus
+  - postScoresBulk
+  - getScoresBulkStatus
+  - postSurveysSyndicatedTimeseriesBatch
+  - getSurveysSyndicatedTimeseriesBatchStatus
+- status: 404
+  title: Not Found
+  name: NotFoundError
+  detail: The identified question, score, data source or bulk request does not exist or
+    is not in the caller's subscription.
+  examples:
+  - Not Found
+  source_operations:
+  - getDataSourceQuestion
+  - getSurveysSyndicatedQuestionsByID
+  - postScores
+  - getScoreDataSources
+  - postResponses
+  - postResponsesBulk
+  - getResponsesBulkStatus
+  - postScoresBulk
+  - getScoresBulkStatus
+- status: 500
+  title: Internal Server Error
+  name: InternalServerError
+  detail: Server-side failure.
+  examples:
+  - a server error occurred
+  - Oops, something went wrong
+  source_operations: all
+coverage:
+  operations_total: 26
+  operations_with_4xx: 25
+  operations_with_500: 26
+  operations_missing_400:
+  - getSurveysSyndicatedCountries

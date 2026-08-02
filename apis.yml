@@ -1,23 +1,144 @@
 aid: morning-consult
 name: Morning Consult
-description: 'Morning Consult is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'Morning Consult is a decision intelligence company that fields more than
+  30,000 online surveys every day across 45+ countries, turning continuous consumer
+  interviewing into brand, reputation, economic and category tracking data. Its flagship
+  product, Morning Consult Intelligence (MCI), exposes that data programmatically through
+  the Morning Consult API — a versioned REST API at api.morningconsult.com/v1 that
+  serves metadata lookup (data sources, countries, categories, entities, questions,
+  scores), on-demand aggregated survey responses and scores with custom audience filtering
+  and calendar-interval aggregation, asynchronous bulk/Data Bridge requests that return
+  Parquet files for Snowflake, BigQuery and Databricks, and an AI resolve endpoint that
+  answers natural-language questions against the syndicated survey corpus.'
+image: https://morningconsult.com/hubfs/MorningConsult_FeaturedImage.png
 url: https://raw.githubusercontent.com/api-evangelist/morning-consult/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-01'
 modified: '2026-08-01'
 tags:
 - Company
-apis: []
+- Market Research
+- Survey Data
+- Consumer Intelligence
+- Brand Tracking
+- Decision Intelligence
+- Public Opinion
+- Analytics
+- Data
+- Artificial Intelligence
+apis:
+- aid: morning-consult:morning-consult-api
+  name: Morning Consult API
+  description: 'The Morning Consult API provides access to the syndicated survey data
+    that powers Morning Consult Intelligence. Metadata (Lookup) operations discover
+    the data sources, countries, categories, entities, questions and scores available
+    to a subscription; Data operations return aggregated question responses and computed
+    scores for a custom audience over a date range; bulk operations queue asynchronous
+    Data Bridge jobs that return Parquet; and an AI operation resolves a natural-language
+    query against the respondent corpus. Authentication is a Basic-credential exchange
+    at POST /auth/token for a short-lived JWT plus a refresh token.'
+  humanURL: https://morningconsult.com/products/intelligence/api-aggregate-daily-data
+  baseURL: https://api.morningconsult.com/v1
+  tags:
+  - Survey Data
+  - Consumer Intelligence
+  - Brand Tracking
+  - Public Opinion
+  - Analytics
+  properties:
+  - type: OpenAPI
+    url: openapi/morning-consult-openapi-original.yml
+  - type: Documentation
+    url: https://api.morningconsult.com/docs/
+  - type: APIReference
+    url: https://api.morningconsult.com/docs/#reference
+  - type: GettingStarted
+    url: https://api.morningconsult.com/docs/#introduction
+  - type: Overlay
+    url: overlays/morning-consult-api-overlay.yaml
+  - type: ErrorCatalog
+    url: errors/morning-consult-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/morning-consult-rate-limits.yml
+  - type: DataModel
+    url: data-model/morning-consult-data-model.yml
+  - type: Examples
+    url: examples/morning-consult-examples.yml
+  - type: JSONSchema
+    url: json-schema/morning-consult-schemas.json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: TrustCenter
+  url: security/morning-consult-trust-center.yml
+- type: VulnerabilityDisclosure
+  url: security/morning-consult-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/morning-consult-domain-security.yml
 - type: Website
-  url: https://forgeglobal.com/morning-consult_stock/
+  url: https://morningconsult.com/
+- type: DeveloperPortal
+  url: https://api.morningconsult.com/docs/
+- type: Documentation
+  url: https://api.morningconsult.com/docs/
+- type: APIReference
+  url: https://api.morningconsult.com/docs/#reference
+- type: GettingStarted
+  url: https://api.morningconsult.com/docs/#introduction
+- type: Authentication
+  url: authentication/morning-consult-authentication.yml
+- type: Support
+  url: https://morningconsult.com/contact-us
+- type: Blog
+  url: https://morningconsult.com/articles
+- type: GitHubOrganization
+  url: https://github.com/morningconsult
+- type: SignUp
+  url: https://morningconsult.com/book-a-demo
+- type: Login
+  url: https://intel.morningconsult.com/
+- type: TermsOfService
+  url: https://morningconsult.com/mci-terms-and-conditions
+- type: PrivacyPolicy
+  url: https://morningconsult.com/privacy-policy
+- type: Security
+  url: https://morningconsult.com/security
+- type: Compliance
+  url: https://morningconsult.com/security
+- type: LLMsTxt
+  url: llms/morning-consult-llms.txt
+- type: Packages
+  url: packages/morning-consult-packages.yml
+- type: Examples
+  url: examples/morning-consult-examples.yml
+- type: RateLimits
+  url: rate-limits/morning-consult-rate-limits.yml
+- type: ErrorCatalog
+  url: errors/morning-consult-problem-types.yml
+- type: DataModel
+  url: data-model/morning-consult-data-model.yml
+- type: Conventions
+  url: conventions/morning-consult-conventions.yml
+- type: Lifecycle
+  url: lifecycle/morning-consult-lifecycle.yml
+- type: Deprecation
+  url: https://api.morningconsult.com/docs/#migration-guide
+- type: Conformance
+  url: conformance/morning-consult-conformance.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Arazzo
+  url: arazzo/_index.yml
+  name: Morning Consult Arazzo workflows
+- type: AgenticAccess
+  url: agentic-access/morning-consult-agentic-access.yml
+x-enrichment:
+  date: '2026-08-01'
+  status: enriched
+  artifacts_added: 22
+  pass: local-v1

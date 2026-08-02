@@ -1,0 +1,47 @@
+# Morning Consult
+A decision intelligence suite that turns daily consumer surveys into actionable insight across brands, markets, and audiences.
+
+This is an llms.txt file, meant for consumption by LLMs.
+
+# Homepage
+[Consumer Insights, Brand Monitoring, & Trends | Morning Consult](https://morningconsult.com/): Morning Consult is a decision intelligence company supporting leaders with AI research agents, trend reports, audience research, brand monitoring, and more. All enhanced by AI.
+
+# About Morning Consult
+[About Our Data | Consumer and Market Insights | Morning Consult](https://morningconsult.com/our-data): High-quality data collection is at the foundation of everything we do at Morning Consult. It’s how we survey over 30,000 people around the world every day.
+[Client Success Stories | Insights and Data Impact | Morning Consult](https://morningconsult.com/client-stories): Discover how leading brands leverage Morning Consult's insights to enhance market strategies and drive global performance.
+[Webinars & Events | Morning Consult](https://morningconsult.com/webinars): Discover insightful webinars, reports, and client stories from Morning Consult, featuring the latest trends in brand reputation and marketing strategies. Sign up for updates today.
+[Company News & Announcements | Morning Consult](https://morningconsult.com/company-news): Discover the latest company news and announcements. Contact our press team for inquiries.
+[Contact Us | Morning Consult](https://morningconsult.com/contact-us): Contact us with any inquiries
+
+# Resources
+
+## Category Intellgience and Brand Metrics
+[Blog](https://morningconsult.com/articles): The latest news, insights and analysis from Morning Consult.
+[Brand Metrics](https://morningconsult.com/articles/tag/brand-metrics): Read insights on leading brands from Morning Consult.
+
+## News, Insights and Analysis
+[Morning Consult Pro | Expert Consumer Trends & Market Insights](https://pro.morningconsult.com/): Morning Consult helps you stay ahead with expert research. Get unlimited access to all of our analysis, reports and chart packs today by subscribing.
+[Featured Insights, Reports & Events | Morning Consult](https://morningconsult.com/reports): Discover the latest insights and reports on consumer trends from Morning Consult.
+
+# Products
+[AI Consumer Insights & Customer Research Tool | Morning Consult](https://morningconsult.com/products/intelligence): Powered by thousands of daily surveys in 45 countries, Morning Consult Intelligence is the ultimate AI-native consumer insights and market intelligence platform.
+[Custom Research and Market Intelligence | Morning Consult](https://morningconsult.com/products/custom-research): Morning Consult’s custom research helps leaders get smarter, faster answers to complex business questions. Powered by our proprietary technology.
+[Category Advantage | Brand Tracking Tool | Morning Consult](https://morningconsult.com/products/category-advantage): Discover how Category Advantage helps brands enhance mental availability and emotional connection, driving growth through actionable insights and fast results.
+[Brand Solutions | Insights for Growth | Morning Consult](https://morningconsult.com/products/brand-solutions): Understand your brand with real-time insights and actionable strategies from Morning Consult. Build trust and emotional connections effectively.
+[Track Brand Reputation | Real-Time Insights and Strategy | Morning Consult](https://morningconsult.com/products/reputation-solutions): Track your brand's reputation in real-time with actionable insights and advanced research tools to enhance consumer trust and drive strategic decisions.
+[Pricing Optimization Strategies | Predict Customer Behavior | Morning Consult](https://morningconsult.com/products/pricing-optimization): Optimize your pricing strategy with data-driven insights, competitive simulations, and risk-aware scenarios to confidently predict market behavior and maximize revenue.
+[Thought Leadership Research | Credible Insights for Strategic Impact | Morning Consult](https://morningconsult.com/products/thought-leadership-research): Transform rigorous research into influential narratives with Morning Consult. Elevate your brand's visibility and impact through actionable insights and strategic storytelling.
+[B2B Sampling & Research Solutions | Morning Consult](https://morningconsult.com/products/b2b-research): Access fast, high-quality B2B research with AI-powered validation. Connect with verified decision-makers and gain insights in days, not weeks.
+
+## AI Agents
+[AI Market Research Agents | Automate Research | Morning Consult](https://morningconsult.com/products/ai-agents): Morning Consult's AI Research Agents accelerate your market research by analyzing trends, drivers, and context to deliver clear insights in minutes
+[AI Agent for Brand Reputation | Instant Insights & Reports | Morning Consult](https://morningconsult.com/products/reputation-agent): Discover how the AI Reputation Research Agent provides instant insights to enhance brand reputation, leveraging real-time data and expert methodologies.
+
+# Solutions
+[Consumer Intelligence Solutions | Always-On Insights and Analytics | Morning Consult](https://morningconsult.com/solutions/insights-and-analytics): Empower your Insights and Analytics teams with real-time consumer data, AI-driven tools, and expert support for faster, actionable decisions. Explore our comprehensive research solutions.
+[Marketing & Communications Teams | Brand & Reputation Intelligence | Morning Consult](https://morningconsult.com/solutions/communications-and-marketing): Empower your marketing and communications teams with real-time brand insights, reputation tracking, and tailored research to drive growth and informed decision-making.
+[Corporate Strategy & Finance | Consumer Intelligence | Morning Consult](https://morningconsult.com/solutions/strategy-and-finance): Leverage real-time consumer insights to assess risk, validate growth strategies, and enhance financial performance with Morning Consult's always-on intelligence platform.
+[Agencies | Marketing & Communications | Morning Consult](https://morningconsult.com/solutions/agencies): Empower your agency with real-time consumer insights, guiding strategic decisions and enhancing client recommendations through trusted public opinion analysis.
+
+## Request a Demo
+[Morning Consult | Decision Intelligence | Request a Demo](https://morningconsult.com/book-a-demo): From our trend reports and expert analysis, to our consumer insights platform to custom research, get in touch to determine the best solution for you.

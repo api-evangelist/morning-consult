@@ -1,0 +1,98 @@
+arazzo: 1.0.1
+info:
+  title: Morning Consult — bulk Data Bridge load
+  version: 1.0.0
+  description: >-
+    Authenticate, resolve the data source and questions, submit an asynchronous bulk
+    responses request, then poll it to completion for the Parquet result.
+sourceDescriptions:
+- name: morningConsult
+  url: ../openapi/morning-consult-openapi-original.yml
+  type: openapi
+workflows:
+- workflowId: bulk-responses-load
+  summary: Queue and poll a Data Bridge bulk responses job.
+  description: >-
+    The Data Bridge bucket allows only 100 submissions per day, so batch every question
+    you need into one request. There is no webhook — polling is the only completion
+    signal.
+  inputs:
+    type: object
+    required: [username, password, country_code]
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+      country_code:
+        type: string
+        example: US
+      question_query:
+        type: string
+        description: Search term used to select the questions to include.
+      min_date:
+        type: string
+        example: '2025-01-01'
+      max_date:
+        type: string
+        example: '2025-03-31'
+      aggregation:
+        type: string
+        description: 'BulkAggregation: day | week | month | quarter | year (not "all").'
+        example: month
+  steps:
+  - stepId: authenticate
+    operationId: postAuthToken
+    outputs:
+      id_token: $response.body#/id_token
+  - stepId: list-data-sources
+    operationId: getDataSources
+    outputs:
+      data_source_id: $response.body#/data_sources/0/id
+  - stepId: find-questions
+    description: Resolve the question IDs to include in the bulk request.
+    operationId: getDataSourceQuestions
+    parameters:
+    - name: data_source_id
+      in: path
+      value: $steps.list-data-sources.outputs.data_source_id
+    - name: country_code
+      in: path
+      value: $inputs.country_code
+    - name: query
+      in: query
+      value: $inputs.question_query
+    - name: page_size
+      in: query
+      value: 100
+    outputs:
+      question_id: $response.body#/questions/0/id
+  - stepId: submit-bulk
+    description: Submit the asynchronous bulk responses request.
+    operationId: postResponsesBulk
+    requestBody:
+      contentType: application/json
+      payload:
+        data_source_id: $steps.list-data-sources.outputs.data_source_id
+        country: $inputs.country_code
+        question_ids:
+        - $steps.find-questions.outputs.question_id
+        aggregation: $inputs.aggregation
+        min_date: $inputs.min_date
+        max_date: $inputs.max_date
+    outputs:
+      request_id: $response.body#/request_id
+  - stepId: poll-bulk
+    description: Poll until the job completes and the Parquet download is available.
+    operationId: getResponsesBulkStatus
+    parameters:
+    - name: request_id
+      in: path
+      value: $steps.submit-bulk.outputs.request_id
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      status: $response.body
+  outputs:
+    request_id: $steps.submit-bulk.outputs.request_id
+    result: $steps.poll-bulk.outputs.status

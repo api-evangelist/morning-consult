@@ -1,0 +1,97 @@
+arazzo: 1.0.1
+info:
+  title: Morning Consult — brand trendline
+  version: 1.0.0
+  description: >-
+    Authenticate, resolve a data source and country, find the brand entity and the
+    question that measures it, then pull the aggregated response timeseries.
+sourceDescriptions:
+- name: morningConsult
+  url: ../openapi/morning-consult-openapi-original.yml
+  type: openapi
+workflows:
+- workflowId: brand-trendline
+  summary: Pull a brand's response trendline from the Morning Consult API.
+  description: >-
+    Mirrors the published "View Company A's buzz trendline" guide against the current,
+    data-source-aware endpoints.
+  inputs:
+    type: object
+    required: [username, password, brand, country_code]
+    properties:
+      username:
+        type: string
+        description: Morning Consult Intelligence username, issued by your Account Executive.
+      password:
+        type: string
+        description: Morning Consult Intelligence API password.
+      brand:
+        type: string
+        description: Brand name to search entities for.
+        example: Morning Consult
+      country_code:
+        type: string
+        description: Two-character country code supported by the chosen data source.
+        example: US
+      min_date:
+        type: string
+        example: '2025-01-01'
+      max_date:
+        type: string
+        example: '2025-03-31'
+      interval:
+        type: string
+        example: month
+  steps:
+  - stepId: authenticate
+    description: Exchange Basic credentials for a JWT and refresh token.
+    operationId: postAuthToken
+    outputs:
+      id_token: $response.body#/id_token
+      refresh_token: $response.body#/refresh_token
+      expires_in: $response.body#/expires_in
+  - stepId: list-data-sources
+    description: List the data sources available to the subscription.
+    operationId: getDataSources
+    outputs:
+      data_source_id: $response.body#/data_sources/0/id
+  - stepId: find-entity
+    description: Find the brand entity by name.
+    operationId: getEntities
+    parameters:
+    - name: query
+      in: query
+      value: $inputs.brand
+    outputs:
+      entity_id: $response.body#/entities/0/id
+  - stepId: find-question
+    description: Find a question about that entity in the chosen data source and country.
+    operationId: getDataSourceQuestions
+    parameters:
+    - name: data_source_id
+      in: path
+      value: $steps.list-data-sources.outputs.data_source_id
+    - name: country_code
+      in: path
+      value: $inputs.country_code
+    - name: entity_id
+      in: query
+      value: $steps.find-entity.outputs.entity_id
+    outputs:
+      question_id: $response.body#/questions/0/id
+  - stepId: get-responses
+    description: Retrieve the aggregated response timeseries for that question.
+    operationId: postResponses
+    requestBody:
+      contentType: application/json
+      payload:
+        data_source_id: $steps.list-data-sources.outputs.data_source_id
+        question_id: $steps.find-question.outputs.question_id
+        min_date: $inputs.min_date
+        max_date: $inputs.max_date
+        aggregation:
+          interval: $inputs.interval
+    outputs:
+      data: $response.body
+  outputs:
+    trendline: $steps.get-responses.outputs.data

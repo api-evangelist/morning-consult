@@ -1,0 +1,49 @@
+generated: '2026-08-01'
+method: searched
+probe: true
+source: https://trust.morningconsult.com/
+url: https://trust.morningconsult.com/
+platform: Vanta
+platform_evidence: 'https://app.vanta.com/doc?s=rmkn6blsq6vuitnag0onmp referenced from
+  the trust center page metadata'
+secondary_url: https://morningconsult.com/security
+certifications:
+- SOC 2 Type II
+- GDPR
+- CCPA
+- ISO 27001
+- ISO 27017
+certification_detail:
+- name: SOC 2 Type II
+  scope: All five Trust Services Criteria; information security program aligned with
+    the AICPA SOC 2 framework and audited annually.
+  held_by: Morning Consult
+- name: GDPR
+  held_by: Morning Consult
+- name: CCPA
+  held_by: Morning Consult
+- name: ISO 27001
+  held_by: AWS (underlying infrastructure)
+- name: ISO 27017
+  held_by: AWS (underlying infrastructure)
+controls:
+- Data in transit protected with HTTPS over TLS 1.2 / 1.3
+- Data at rest encrypted with AES-256
+- SSO available via SAML 2.0 integration
+- Infrastructure hosted on AWS
+evidence:
+- source: https://trust.morningconsult.com/
+  http_status: 200
+  keywords:
+  - trust center
+  - trust
+  - security
+  - compliance
+- source: https://morningconsult.com/security
+  http_status: 200
+  keywords:
+  - soc 2
+  - soc2
+  - gdpr
+  - ccpa
+  - iso27001

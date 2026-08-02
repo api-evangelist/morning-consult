@@ -1,0 +1,83 @@
+arazzo: 1.0.1
+info:
+  title: Morning Consult — compute a score
+  version: 1.0.0
+  description: >-
+    Authenticate, discover an available score and the data sources it is available in,
+    bind it to a brand entity, and request the score timeseries.
+sourceDescriptions:
+- name: morningConsult
+  url: ../openapi/morning-consult-openapi-original.yml
+  type: openapi
+workflows:
+- workflowId: compute-score
+  summary: Compute a named Morning Consult score for a brand over time.
+  inputs:
+    type: object
+    required: [username, password, brand, country_code]
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+      brand:
+        type: string
+        example: Morning Consult
+      country_code:
+        type: string
+        example: US
+      min_date:
+        type: string
+        example: '2025-01-01'
+      max_date:
+        type: string
+        example: '2025-03-31'
+      interval:
+        type: string
+        example: month
+  steps:
+  - stepId: authenticate
+    operationId: postAuthToken
+    outputs:
+      id_token: $response.body#/id_token
+  - stepId: list-scores
+    description: Discover the scores available to the subscription.
+    operationId: getScores
+    outputs:
+      score_id: $response.body#/scores/0/id
+  - stepId: score-data-sources
+    description: Confirm which data sources the score can be computed in.
+    operationId: getScoreDataSources
+    parameters:
+    - name: score_id
+      in: path
+      value: $steps.list-scores.outputs.score_id
+    outputs:
+      data_source_id: $response.body#/data_sources/0/id
+  - stepId: find-entity
+    description: Resolve the brand entity the score will be run against.
+    operationId: getEntities
+    parameters:
+    - name: query
+      in: query
+      value: $inputs.brand
+    outputs:
+      entity_id: $response.body#/entities/0/id
+  - stepId: post-scores
+    description: Request the score timeseries.
+    operationId: postScores
+    requestBody:
+      contentType: application/json
+      payload:
+        data_source_id: $steps.score-data-sources.outputs.data_source_id
+        score_id: $steps.list-scores.outputs.score_id
+        country_code: $inputs.country_code
+        entity_id: $steps.find-entity.outputs.entity_id
+        min_date: $inputs.min_date
+        max_date: $inputs.max_date
+        aggregation:
+          interval: $inputs.interval
+    outputs:
+      data: $response.body
+  outputs:
+    score_series: $steps.post-scores.outputs.data

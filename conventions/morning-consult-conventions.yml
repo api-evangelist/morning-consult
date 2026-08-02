@@ -1,0 +1,136 @@
+generated: '2026-08-01'
+method: searched
+source: https://api.morningconsult.com/docs/#api-conventions
+derived_from: openapi/morning-consult-openapi-original.yml
+api: morning-consult:morning-consult-api
+base_url: https://api.morningconsult.com/v1
+authentication:
+  style: bearer-jwt-after-basic-exchange
+  exchange_operation: postAuthToken
+  exchange_endpoint: POST /auth/token
+  initial_credentials: HTTP Basic (Morning Consult Intelligence username + password,
+    issued by the customer's Account Executive)
+  request_header: 'Authorization: Bearer <id_token>'
+  token_lifetime_seconds: 3600
+  refresh: >-
+    The token response carries a refresh_token; POST it back to /auth/token with the
+    RefreshToken bearer scheme before expires_in elapses to mint a new pair.
+  sso_note: SSO-authenticated accounts must request a separate API password from their
+    Account Executive in order to retrieve a JWT.
+  detail: authentication/morning-consult-authentication.yml
+idempotency:
+  supported: false
+  note: >-
+    Morning Consult documents no idempotency key, no request-replay contract and no
+    Idempotency-Key parameter appears anywhere in the OpenAPI. Retry safety comes from
+    the shape of the surface instead: every read is a GET, and the "write" operations
+    (POST /responses, POST /scores, POST /ai/resolve) are query operations that compute
+    a result rather than mutate state. The asynchronous bulk operations
+    (POST /responses/bulk, POST /scores/bulk) DO create a server-side request_id, and a
+    repeated submission creates a new job — so those are the only non-idempotent calls.
+    No `Idempotency` pointer is wired for this provider.
+pagination:
+  style: opaque-cursor-token
+  request_params:
+  - name: pagination_token
+    in: query
+    format: base64
+    constraint: When pagination_token is provided, no other query parameter may be
+      specified.
+  - name: page_size
+    in: query
+    default: 50
+    minimum: 1
+    maximum: 100
+  response_field: pagination_token
+  loop: >-
+    Repeat the request echoing the pagination_token from the previous response until the
+    response no longer contains one.
+  schema: '#/components/schemas/PaginationToken'
+date_ranges:
+  params:
+  - min_date
+  - max_date
+  format: YYYY-MM-DD
+  inclusive: true
+  rules:
+  - min_date and max_date must both be provided or both be omitted
+  - when both are omitted the API defaults to the last 10 years of data
+  - maximum span is 10 years
+  applies_to:
+  - POST /responses
+  - POST /scores
+  - POST /responses/bulk
+filtering:
+  audiences:
+    description: >-
+      Every data request accepts an `audience` built from `match` conditions on a
+      question's response IDs, composed with boolean `and` / `or` / `not` fields that
+      may be nested.
+    max_conditions: 20
+    schema: '#/components/schemas/Audience'
+  aggregation:
+    param: aggregation.interval
+    values: [day, week, month, quarter, year, all]
+    notes: >-
+      Each data point is timestamped with the start date of its interval. The week
+      interval starts on Monday; `all` collapses the whole range into one data point.
+      The bulk endpoints take the same values as a bare string (BulkAggregation) and
+      do not accept `all`.
+  search:
+    param: query
+    behaviour: partial matching and normalization
+    min_length: 3
+    max_length: 100
+  scoping:
+    note: >-
+      The current API is data-source aware — data requests require an explicit
+      data_source_id, and question lookup is scoped by both data_source_id and
+      country_code.
+error_envelope:
+  format: custom-json
+  rfc9457: false
+  media_type: application/json
+  shape:
+    code: Numeric HTTP status code (integer, 100-599)
+    status: Text description of the HTTP status code
+    errors: Array of specific, field-level error message strings
+  example:
+    code: 400
+    status: Bad Request
+    errors:
+    - 'invalid value "foo" for field "question_id": must be a valid UUID'
+  multi_error: true
+  support_contact: api-support@morningconsult.com
+  detail: errors/morning-consult-problem-types.yml
+rate_limiting:
+  style: bucketed-per-minute
+  headers: [X-Rate-Limit-Limit, X-Rate-Limit-Remaining, X-Rate-Limit-Reset]
+  exceeded_status: 429
+  detail: rate-limits/morning-consult-rate-limits.yml
+versioning:
+  scheme: uri-path
+  current: v1
+  deprecation: >-
+    The legacy /v1/surveys/syndicated/* family is deprecated in-spec and sunsets
+    2026-10-01; the docs publish a full endpoint-by-endpoint migration map.
+  detail: lifecycle/morning-consult-lifecycle.yml
+request_tracing:
+  request_id_header: null
+  note: No request-id / correlation-id header is documented or present in the OpenAPI.
+async:
+  style: submit-then-poll
+  submit:
+  - POST /responses/bulk
+  - POST /scores/bulk
+  poll:
+  - GET /responses/bulk/{request_id}
+  - GET /scores/bulk/{request_id}
+  result_format: Parquet file download, intended for direct ingestion into Snowflake,
+    BigQuery or Databricks
+  scale: up to 100,000 trend/question-audience combinations per bulk call
+  callbacks: none — Morning Consult publishes no webhooks or event surface, so polling
+    is the only completion signal
+media_types:
+  request: application/json
+  response: application/json

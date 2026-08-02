@@ -1,0 +1,110 @@
+generated: '2026-08-01'
+method: searched
+source: https://api.morningconsult.com/docs/
+derived_from: openapi/morning-consult-openapi-original.yml
+api: morning-consult:morning-consult-api
+summary: >-
+  Morning Consult publishes runnable request examples for every operation in four
+  languages, and the OpenAPI carries named response examples on every declared response
+  including each error class. Values below are the provider's own published examples,
+  captured verbatim — no example values were invented.
+code_sample_languages:
+- cURL
+- Python (requests)
+- Node.js (node-fetch)
+- Go (net/http)
+in_spec_examples:
+  response_examples: true
+  error_examples: true
+  parameter_examples: true
+  schema_examples: true
+  named_error_examples:
+  - InternalServerError
+  - BadRequest
+  - PageSize
+  - InvalidQuestionID
+  - NotFound
+  - InvalidCredentials
+  - InvalidRefreshToken
+  - Forbidden
+examples:
+- name: Exchange credentials for a JWT
+  operation: postAuthToken
+  request: |
+    curl --fail --silent --show-error \
+      --request POST \
+      --user <username:password> \
+      --url "https://api.morningconsult.com/v1/auth/token"
+  response_shape:
+    token_type: Bearer
+    expires_in: 3600
+    id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
+    refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
+  source: https://api.morningconsult.com/docs/#authentication
+- name: Page through metadata with a pagination token
+  operation: getDataSourceQuestions
+  request: |
+    curl --fail --silent --show-error \
+      --header "Authorization: Bearer <api_token>" \
+      --url "https://api.morningconsult.com/v1/surveys/syndicated/questions?pagination_token=eyJwYWdlX3NpemUiOjUwLCJzZWFyY2hfYWZ0ZXIiOlswLDk0XX0"
+  note: >-
+    The published pagination walkthrough still uses the deprecated
+    /surveys/syndicated/questions route; the current equivalent is
+    GET /data_sources/{data_source_id}/countries/{country_code}/questions.
+  source: https://api.morningconsult.com/docs/#pagination
+- name: Aggregated responses over an explicit date range
+  operation: postResponses
+  request_body:
+    data_source_id: 00de2081-e013-411d-823c-cd483283e38d
+    question_id: b807c287-c2fe-4319-8316-afa93f0f3527
+    min_date: '2025-01-01'
+    max_date: '2025-03-31'
+  source: https://api.morningconsult.com/docs/#date-ranges
+- name: Natural-language query against the survey corpus
+  operation: postAIResolve
+  request_body:
+    text: What do women think of Cheerios?
+  note: Responses typically take around 10 seconds, up to ~20 seconds for complex
+    queries.
+  source: https://api.morningconsult.com/docs/#ai
+- name: Validation error envelope
+  operation: postResponses
+  request_body:
+    data_source_id: not-a-uuid
+    question_id: b807c287-c2fe-4319-8316-afa93f0f3527
+  response:
+    code: 400
+    status: Bad Request
+    errors:
+    - 'invalid value "foo" for field "question_id": must be a valid UUID'
+  source: https://api.morningconsult.com/docs/#handling-errors
+- name: Rate-limit headers
+  operation: any
+  response_headers_within_limits:
+    X-Rate-Limit-Limit: 200
+    X-Rate-Limit-Remaining: 179
+    X-Rate-Limit-Reset: 1633538752414
+  response_headers_exceeded:
+    status: 429
+    X-Rate-Limit-Limit: 200
+    X-Rate-Limit-Remaining: 0
+    X-Rate-Limit-Reset: 1633538752414
+  source: https://api.morningconsult.com/docs/#rate-limits
+- name: Aggregation interval
+  operation: postResponses
+  request_fragment:
+    aggregation:
+      interval: month
+  source: openapi/morning-consult-openapi-original.yml#/components/schemas/Aggregation
+guides:
+  source: https://api.morningconsult.com/docs/#guides
+  walkthroughs:
+  - View a company's buzz trendline from 2020
+  - Building a custom audience
+  - Building a custom audience with 'not'
+  - Updating an audience
+  - Building a custom audience with deeply nested logic
+  - Computing a score
+  - Computing a component-based score
+  - Requesting bulk data with the bulk responses endpoint
+  - Requesting bulk score data with the bulk scores endpoint
