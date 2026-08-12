@@ -74,6 +74,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: MCPServer
+  url: mcp/morning-consult-mcp.yml
 - type: TrustCenter
   url: security/morning-consult-trust-center.yml
 - type: VulnerabilityDisclosure
