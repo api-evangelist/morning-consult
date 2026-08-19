@@ -14,7 +14,7 @@ image: https://morningconsult.com/hubfs/MorningConsult_FeaturedImage.png
 url: https://raw.githubusercontent.com/api-evangelist/morning-consult/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-08-01'
 modified: '2026-08-01'
 tags:
