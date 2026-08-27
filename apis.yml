@@ -29,35 +29,100 @@ tags:
 - Data
 - Artificial Intelligence
 apis:
-- aid: morning-consult:morning-consult-api
-  name: Morning Consult API
-  description: 'The Morning Consult API provides access to the syndicated survey data
-    that powers Morning Consult Intelligence. Metadata (Lookup) operations discover
-    the data sources, countries, categories, entities, questions and scores available
-    to a subscription; Data operations return aggregated question responses and computed
-    scores for a custom audience over a date range; bulk operations queue asynchronous
-    Data Bridge jobs that return Parquet; and an AI operation resolves a natural-language
-    query against the respondent corpus. Authentication is a Basic-credential exchange
-    at POST /auth/token for a short-lived JWT plus a refresh token.'
+- aid: morning-consult:morning-consult-ai-api
+  name: Morning Consult AI API
+  description: Morning Consult's AI backed by survey data responses.
   humanURL: https://morningconsult.com/products/intelligence/api-aggregate-daily-data
   baseURL: https://api.morningconsult.com/v1
   tags:
-  - Survey Data
-  - Consumer Intelligence
-  - Brand Tracking
-  - Public Opinion
-  - Analytics
+  - AI
   properties:
   - type: OpenAPI
-    url: openapi/morning-consult-openapi-original.yml
+    url: openapi/morning-consult-ai-api-openapi.yml
   - type: Documentation
     url: https://api.morningconsult.com/docs/
   - type: APIReference
     url: https://api.morningconsult.com/docs/#reference
   - type: GettingStarted
     url: https://api.morningconsult.com/docs/#introduction
-  - type: Overlay
-    url: overlays/morning-consult-api-overlay.yaml
+  - type: ErrorCatalog
+    url: errors/morning-consult-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/morning-consult-rate-limits.yml
+  - type: DataModel
+    url: data-model/morning-consult-data-model.yml
+  - type: Examples
+    url: examples/morning-consult-examples.yml
+  - type: JSONSchema
+    url: json-schema/morning-consult-schemas.json
+- aid: morning-consult:morning-consult-authentication-api
+  name: Morning Consult Authentication API
+  description: Authentication related operations.
+  humanURL: https://morningconsult.com/products/intelligence/api-aggregate-daily-data
+  baseURL: https://api.morningconsult.com/v1
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/morning-consult-authentication-api-openapi.yml
+  - type: Documentation
+    url: https://api.morningconsult.com/docs/
+  - type: APIReference
+    url: https://api.morningconsult.com/docs/#reference
+  - type: GettingStarted
+    url: https://api.morningconsult.com/docs/#introduction
+  - type: ErrorCatalog
+    url: errors/morning-consult-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/morning-consult-rate-limits.yml
+  - type: DataModel
+    url: data-model/morning-consult-data-model.yml
+  - type: Examples
+    url: examples/morning-consult-examples.yml
+  - type: JSONSchema
+    url: json-schema/morning-consult-schemas.json
+- aid: morning-consult:morning-consult-data-api
+  name: Morning Consult Data API
+  description: Syndicated tracking survey data data responses.
+  humanURL: https://morningconsult.com/products/intelligence/api-aggregate-daily-data
+  baseURL: https://api.morningconsult.com/v1
+  tags:
+  - Data
+  properties:
+  - type: OpenAPI
+    url: openapi/morning-consult-data-api-openapi.yml
+  - type: Documentation
+    url: https://api.morningconsult.com/docs/
+  - type: APIReference
+    url: https://api.morningconsult.com/docs/#reference
+  - type: GettingStarted
+    url: https://api.morningconsult.com/docs/#introduction
+  - type: ErrorCatalog
+    url: errors/morning-consult-problem-types.yml
+  - type: RateLimits
+    url: rate-limits/morning-consult-rate-limits.yml
+  - type: DataModel
+    url: data-model/morning-consult-data-model.yml
+  - type: Examples
+    url: examples/morning-consult-examples.yml
+  - type: JSONSchema
+    url: json-schema/morning-consult-schemas.json
+- aid: morning-consult:morning-consult-lookup-api
+  name: Morning Consult Lookup API
+  description: Metadata information related to syndicated surveys.
+  humanURL: https://morningconsult.com/products/intelligence/api-aggregate-daily-data
+  baseURL: https://api.morningconsult.com/v1
+  tags:
+  - Lookup
+  properties:
+  - type: OpenAPI
+    url: openapi/morning-consult-lookup-api-openapi.yml
+  - type: Documentation
+    url: https://api.morningconsult.com/docs/
+  - type: APIReference
+    url: https://api.morningconsult.com/docs/#reference
+  - type: GettingStarted
+    url: https://api.morningconsult.com/docs/#introduction
   - type: ErrorCatalog
     url: errors/morning-consult-problem-types.yml
   - type: RateLimits
@@ -74,6 +139,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/morning-consult-api-overlay.yaml
 - type: MCPServer
   url: mcp/morning-consult-mcp.yml
 - type: TrustCenter
