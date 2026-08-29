@@ -10,6 +10,18 @@ description: 'Morning Consult is a decision intelligence company that fields mor
   and calendar-interval aggregation, asynchronous bulk/Data Bridge requests that return
   Parquet files for Snowflake, BigQuery and Databricks, and an AI resolve endpoint that
   answers natural-language questions against the syndicated survey corpus.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://morningconsult.com/hubfs/MorningConsult_FeaturedImage.png
 url: https://raw.githubusercontent.com/api-evangelist/morning-consult/refs/heads/main/apis.yml
 x-type: company
