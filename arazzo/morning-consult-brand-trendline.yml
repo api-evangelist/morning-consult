@@ -6,8 +6,14 @@ info:
     Authenticate, resolve a data source and country, find the brand entity and the
     question that measures it, then pull the aggregated response timeseries.
 sourceDescriptions:
-- name: morningConsult
-  url: ../openapi/morning-consult-openapi-original.yml
+- name: authenticationApi
+  url: ../openapi/morning-consult-authentication-api-openapi.yml
+  type: openapi
+- name: dataApi
+  url: ../openapi/morning-consult-data-api-openapi.yml
+  type: openapi
+- name: lookupApi
+  url: ../openapi/morning-consult-lookup-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: brand-trendline

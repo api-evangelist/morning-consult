@@ -6,8 +6,14 @@ info:
     Authenticate, resolve the data source and questions, submit an asynchronous bulk
     responses request, then poll it to completion for the Parquet result.
 sourceDescriptions:
-- name: morningConsult
-  url: ../openapi/morning-consult-openapi-original.yml
+- name: authenticationApi
+  url: ../openapi/morning-consult-authentication-api-openapi.yml
+  type: openapi
+- name: dataApi
+  url: ../openapi/morning-consult-data-api-openapi.yml
+  type: openapi
+- name: lookupApi
+  url: ../openapi/morning-consult-lookup-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: bulk-responses-load
