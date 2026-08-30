@@ -2,23 +2,30 @@
 kin_checks:
   slug: morning-consult
   schema_version: 0.15.1
-  scored_at: '2026-08-27'
-  run_ts: 2026-08-27T140727
+  scored_at: '2026-08-28'
+  run_ts: 2026-08-28T221322
   note: Actionable checks only (missed + partial). earned/na are every other check
     in rubric/scoring-0.15.1.yml; counts below let you verify that.
   counts:
     total: 130
-    earned: 39
+    earned: 55
     partial: 9
-    missed: 40
-    na: 42
+    missed: 42
+    na: 24
   checks:
-  - id: multiple_apis
-    status: missed
   - id: well_known_published
     status: missed
   - id: apis_json_self_hosted
     status: missed
+  - id: openapi_3_2
+    status: missed
+    detail: 0 of 4 openapi documents pass
+  - id: openapi_3_1
+    status: missed
+    detail: 0 of 4 openapi documents pass
+  - id: webhooks_or_callbacks
+    status: missed
+    detail: 0 of 4 openapi documents pass
   - id: asyncapi_present
     status: missed
   - id: json_schema_per_resource
@@ -95,7 +102,11 @@ kin_checks:
     status: missed
   - id: examples_present
     status: partial
-    earned: 1.0
+    earned: 2.41
+  - id: components_reuse
+    status: partial
+    earned: 1.5
+    detail: 2 of 4 openapi documents pass
   - id: github_org_present
     status: partial
     earned: 1.0
@@ -114,10 +125,6 @@ kin_checks:
   - id: error_semantics
     status: partial
     earned: 4.0
-    detail: 'grade: documented'
-  - id: openapi_examples
-    status: partial
-    earned: 1.75
     detail: 'grade: documented'
   - id: rate_limit_signal
     status: partial
