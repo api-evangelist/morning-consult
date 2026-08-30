@@ -1,0 +1,187 @@
+openapi: 3.2.0
+info:
+  title: Morning Consult Authentication API
+  version: 1.0.0
+  description: The Morning Consult API provides access to various forms of survey data collected by Morning Consult
+  contact:
+    email: api-support@morningconsult.com
+  termsOfService: https://morningconsult.com/mci-terms-and-conditions
+servers:
+- url: https://api.morningconsult.com/v1
+  description: Version 1 API
+security:
+- JWT: []
+tags:
+- name: Authentication
+  description: Authentication related operations.
+paths:
+  /auth/token:
+    post:
+      x-docs-exclude-operation-json: true
+      x-docs-code-example-apitoken: basic
+      summary: Retrieve Authentication Token
+      operationId: postAuthToken
+      responses:
+        '200':
+          $ref: '#/components/responses/PostAuthTokenOutput'
+        '400':
+          $ref: '#/components/responses/InvalidCredentialsError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+      - Basic: []
+      - RefreshToken: []
+      description: 'Exchange credentials for JWT and Refresh tokens. The returned tokens are required to use other API endpoints and to retrieve new tokens before they expire.
+
+        For initial authentication, supply your username and password with the Basic authorization format header. For subsequent authentications, use the refresh token in the Bearer format.'
+      tags:
+      - Authentication
+components:
+  schemas:
+    Error:
+      type: object
+      description: Error message.
+      additionalProperties: false
+      example:
+        code: 500
+        status: Internal Server Error
+        errors:
+        - Oops, something went wrong
+      properties:
+        code:
+          type: integer
+          description: Numeric HTTP status code.
+          example: 500
+          format: int32
+          minimum: 100
+          maximum: 599
+        status:
+          type: string
+          description: Text description of HTTP status code.
+          example: Internal Server Error
+        errors:
+          type: array
+          description: Messages describing errors.
+          items:
+            title: error
+            type: string
+            description: A specific error message.
+          example:
+          - Oops, something went wrong
+    Tokens:
+      type: object
+      example:
+        token_type: Bearer
+        expires_in: 3600
+        id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
+        refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      properties:
+        token_type:
+          type: string
+          description: The type of token received. Will be Bearer.
+          example: Bearer
+          default: Bearer
+        expires_in:
+          type: integer
+          description: The number of seconds until the token expires.
+          example: 3600
+          default: 3600
+          readOnly: true
+        refresh_token:
+          type: string
+          description: The refresh token to be used to retrieve a new JWT.
+        id_token:
+          type: string
+          description: The JWT token. Use this in the Authorization header in requests to other endpoints.
+  headers:
+    X-Rate-Limit-Reset:
+      description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
+      schema:
+        type: integer
+        example: 1633538752414
+    X-Rate-Limit-Remaining:
+      description: The number of remaining requests in the current rate limit period.
+      schema:
+        type: integer
+        example: 179
+    X-Rate-Limit-Limit:
+      description: The rate limit ceiling that is applicable for the current request.
+      schema:
+        type: integer
+        example: 200
+  responses:
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InternalServerError:
+              description: Internal Server Error
+              value:
+                code: 500
+                status: Internal Server Error
+                errors:
+                - a server error occurred
+    PostAuthTokenOutput:
+      description: Auth Tokens
+      content:
+        application/json:
+          examples:
+            tokens:
+              $ref: '#/components/examples/Tokens'
+          schema:
+            $ref: '#/components/schemas/Tokens'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    InvalidCredentialsError:
+      description: Invalid Credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InvalidCredentials:
+              description: Invalid Credentials
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                - invalid credentials
+            InvalidRefreshToken:
+              description: Invalid Refresh Token
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                - invalid or expired refresh token
+  examples:
+    Tokens:
+      description: Auth Tokens
+      value:
+        token_type: Bearer
+        expires_in: 3600
+        id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
+        refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
+  securitySchemes:
+    Basic:
+      type: http
+      scheme: basic
+      description: Username and password credentials for initial authentication.
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer header authentication for performing regular requests.
+    RefreshToken:
+      type: http
+      scheme: bearer
+      description: Refresh Token bearer header authentication for renewing tokens.
+x-dd-extra-monitors:
+- "{\n  \"name\": \"Henosis: MCP internal service errors on env:{{environment}}\",\n  \"type\": \"trace-analytics alert\",\n  \"query\": \"trace-analytics(\\\"service:henosis env:{{environment}} operation_name:http.request @span.kind:server @mcp.internal_error:true\\\").index(\\\"trace-search\\\", \\\"djm-search\\\").rollup(\\\"count\\\").last(\\\"5m\\\") > 0\",\n  \"message\": \"Henosis MCP returned internal service errors in the last 5 minutes.\\n@pagerduty-henosis-mcp\",\n  \"tags\": [\n    \"henosis\",\n    \"mcp\"\n  ],\n  \"options\": {\n    \"thresholds\": {\n      \"critical\": 0\n    },\n    \"notify_no_data\": false,\n    \"include_tags\": true\n  },\n  \"priority\": 3\n}\n"
