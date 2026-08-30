@@ -47,6 +47,8 @@ apis:
   humanURL: https://morningconsult.com/products/intelligence/api-aggregate-daily-data
   baseURL: https://api.morningconsult.com/v1
   tags:
+  - Artificial Intelligence
+  tags_raw:
   - AI
   properties:
   - type: OpenAPI
