@@ -48,23 +48,21 @@ paths:
               Example:
                 $ref: '#/components/examples/PostAIResolveInput'
 components:
-  headers:
-    X-Rate-Limit-Reset:
-      description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
-      schema:
-        type: integer
-        example: 1633538752414
-    X-Rate-Limit-Remaining:
-      description: The number of remaining requests in the current rate limit period.
-      schema:
-        type: integer
-        example: 179
-    X-Rate-Limit-Limit:
-      description: The rate limit ceiling that is applicable for the current request.
-      schema:
-        type: integer
-        example: 200
   schemas:
+    PostAIResolveInput:
+      type: object
+      additionalProperties: false
+      properties:
+        text:
+          title: Text
+          type: string
+          description: Query text.
+          minLength: 1
+          maxLength: 1000
+          pattern: ^[^\0]+$
+          example: What do women think of Cheerios?
+      required:
+      - text
     Error:
       type: object
       description: Error message.
@@ -95,21 +93,31 @@ components:
             description: A specific error message.
           example:
           - Oops, something went wrong
-    PostAIResolveInput:
-      type: object
-      additionalProperties: false
-      properties:
-        text:
-          title: Text
-          type: string
-          description: Query text.
-          minLength: 1
-          maxLength: 1000
-          pattern: ^[^\0]+$
-          example: What do women think of Cheerios?
-      required:
-      - text
   responses:
+    PostAIResolveOutput:
+      description: The response for resolving a query to a summary.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              summary:
+                description: A summary of the data used to answer a query.
+                type: string
+            required:
+            - summary
+          examples:
+            Response:
+              description: Response to a query
+              value:
+                summary: Here’s a summary of how women in the United States feel about Cheerios...
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
     BadRequestError:
       description: Bad Request
       content:
@@ -146,30 +154,22 @@ components:
                 status: Internal Server Error
                 errors:
                 - a server error occurred
-    PostAIResolveOutput:
-      description: The response for resolving a query to a summary.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              summary:
-                description: A summary of the data used to answer a query.
-                type: string
-            required:
-            - summary
-          examples:
-            Response:
-              description: Response to a query
-              value:
-                summary: Here’s a summary of how women in the United States feel about Cheerios...
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
+  headers:
+    X-Rate-Limit-Remaining:
+      description: The number of remaining requests in the current rate limit period.
+      schema:
+        type: integer
+        example: 179
+    X-Rate-Limit-Limit:
+      description: The rate limit ceiling that is applicable for the current request.
+      schema:
+        type: integer
+        example: 200
+    X-Rate-Limit-Reset:
+      description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
+      schema:
+        type: integer
+        example: 1633538752414
   examples:
     PostAIResolveInput:
       value:

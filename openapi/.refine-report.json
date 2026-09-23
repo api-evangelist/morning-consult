@@ -1,0 +1,26 @@
+{
+  "provider": "morning-consult",
+  "sources": [
+    "_original/morning-consult-openapi-original.yml"
+  ],
+  "outputs": [
+    "morning-consult-ai-api-openapi.yml",
+    "morning-consult-authentication-api-openapi.yml",
+    "morning-consult-data-api-openapi.yml",
+    "morning-consult-lookup-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "morning-consult-openapi-original.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "morning-consult-ai-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "morning-consult-authentication-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "morning-consult-data-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "morning-consult-lookup-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}
