@@ -428,525 +428,7 @@ paths:
           type: string
           format: uuid
 components:
-  responses:
-    GetCategoriesOutput:
-      description: Categories
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              categories:
-                type: array
-                description: An array of question categories.
-                items:
-                  $ref: '#/components/schemas/Category'
-              pagination_token:
-                $ref: '#/components/schemas/PaginationToken'
-          examples:
-            Example:
-              description: Categories
-              value:
-                categories:
-                - id: brand
-                  label: Brand
-                - id: demographic
-                  label: Demographic
-                pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetScoreDataSourcesOutput:
-      description: Score Data Sources
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data_sources:
-                type: array
-                description: The data sources the score is available in, along with the countries the score can be calculated in for each data source.
-                items:
-                  $ref: '#/components/schemas/DataSource'
-          examples:
-            Example:
-              description: Score Data Sources
-              value:
-                data_sources:
-                - id: 00de2081-e013-411d-823c-cd483283e38d
-                  name: Daily Tracker
-                  countries:
-                  - code: us
-                    label: United States
-                  - code: de
-                    label: Germany
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    BadRequestError:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            BadRequest:
-              description: Multiple Errors
-              value:
-                code: 400
-                status: Bad Request
-                errors:
-                - 'invalid value "uuu" for field "country_code": must be 2 characters'
-                - 'invalid value "not base64" for field "pagination_token": must be valid base64'
-            PageSize:
-              description: Invalid Page Size
-              value:
-                code: 400
-                status: Bad Request
-                errors:
-                - 'invalid value "1000" for field "page_size": must be maximum 100'
-    GetQuestionByIDOutput:
-      description: Single Question
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Question'
-          examples:
-            question:
-              $ref: '#/components/examples/Question'
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    InvalidQuestionIDError:
-      description: Invalid Question ID
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            InvalidQuestionID:
-              description: Invalid Question ID
-              value:
-                code: 400
-                status: Bad Request
-                errors:
-                - Invalid question id
-    InternalServerError:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            InternalServerError:
-              description: Internal Server Error
-              value:
-                code: 500
-                status: Internal Server Error
-                errors:
-                - a server error occurred
-    GetCountriesOutput:
-      description: Countries
-      content:
-        application/json:
-          schema:
-            type: object
-            additionalProperties: false
-            properties:
-              countries:
-                type: array
-                description: A list of countries with questions available.
-                uniqueItems: true
-                minItems: 0
-                items:
-                  $ref: '#/components/schemas/Country'
-          examples:
-            Example:
-              description: Countries
-              value:
-                countries:
-                - code: us
-                  label: United States
-                - code: de
-                  label: Germany
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    ForbiddenError:
-      description: Forbidden
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            Forbidden:
-              description: Forbidden
-              value:
-                code: 403
-                status: Forbidden
-                errors:
-                - missing necessary claims
-    GetDataSourcesOutput:
-      description: Data Sources
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-            - data_sources
-            properties:
-              data_sources:
-                type: array
-                description: The data sources the caller has access to.
-                items:
-                  $ref: '#/components/schemas/DataSource'
-              pagination_token:
-                $ref: '#/components/schemas/PaginationToken'
-          examples:
-            Example:
-              description: Data Sources
-              value:
-                data_sources:
-                - id: 00de2081-e013-411d-823c-cd483283e38d
-                  name: Daily Tracker
-                  countries:
-                  - code: us
-                    label: United States
-                  - code: de
-                    label: Germany
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetDataSourceQuestionOutput:
-      description: Single Question
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/DataSourceQuestion'
-          examples:
-            question:
-              $ref: '#/components/examples/DataSourceQuestion'
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetDataSourceQuestionsOutput:
-      description: Questions
-      content:
-        application/json:
-          schema:
-            type: object
-            description: A paginated list of questions across accessible data sources.
-            required:
-            - questions
-            properties:
-              pagination_token:
-                $ref: '#/components/schemas/PaginationToken'
-              questions:
-                type: array
-                description: A list of questions with data available.
-                items:
-                  $ref: '#/components/schemas/DataSourceQuestion'
-          examples:
-            questions:
-              $ref: '#/components/examples/DataSourceQuestions'
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetScoresOutput:
-      description: Scores
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              scores:
-                type: array
-                description: A list of countries the score is valid in.
-                items:
-                  $ref: '#/components/schemas/Score'
-              pagination_token:
-                $ref: '#/components/schemas/PaginationToken'
-          examples:
-            Example:
-              description: Score
-              value:
-                scores:
-                - id: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
-                  label: Net Promoter Score
-                  description: Net Promoter Score is the NPS Promoters score minus the NPS Detractors score.
-                  entity_type:
-                    id: brand
-                    label: Brand
-                - id: 48ef9961-1dc8-42d1-b03c-c480681bc732
-                  label: Index of Consumer Sentiment (ICS)
-                  description: The Index of Consumer Sentiment (ICS) is a composite score that measures consumer confidence based on economic outlook questions.
-                pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetQuestionsOutput:
-      description: Questions
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              pagination_token:
-                $ref: '#/components/schemas/PaginationToken'
-              questions:
-                type: array
-                description: A list of questions with data available.
-                items:
-                  $ref: '#/components/schemas/Question'
-          examples:
-            questions:
-              $ref: '#/components/examples/Questions'
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetEntitiesOutput:
-      description: Entities
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              entities:
-                type: array
-                description: A list of entities tracked in our syndicated surveys.
-                items:
-                  $ref: '#/components/schemas/Entity'
-              pagination_token:
-                $ref: '#/components/schemas/PaginationToken'
-          examples:
-            Example:
-              description: Entities
-              value:
-                entities:
-                - id: autotrader
-                  label: Autotrader
-                - id: A000148
-                  label: Jake Auchincloss
-                pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetResponsesBulkStatusOutput:
-      description: Bulk Responses Request Status
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetResponsesBulkStatusOutput'
-          examples:
-            Processing:
-              $ref: '#/components/examples/GetResponsesBulkStatusOutputProcessing'
-            Complete:
-              $ref: '#/components/examples/GetResponsesBulkStatusOutputComplete'
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetScoreCountriesOutput:
-      description: Score Countries
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              countries:
-                type: array
-                description: A list of scores for syndicated surveys.
-                items:
-                  $ref: '#/components/schemas/Country'
-          examples:
-            Example:
-              description: Score
-              value:
-                countries:
-                - code: us
-                  label: United Stated
-                - code: de
-                  label: Germany
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    GetScoresBulkStatusOutput:
-      description: Bulk Scores Request Status
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/GetScoresBulkStatusOutput'
-          examples:
-            Processing:
-              $ref: '#/components/examples/GetScoresBulkStatusOutputProcessing'
-            Complete:
-              $ref: '#/components/examples/GetScoresBulkStatusOutputComplete'
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    NotFoundError:
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            NotFound:
-              description: Not Found
-              value:
-                code: 404
-                status: Not Found
-                errors:
-                - Not Found
   schemas:
-    ResponseLabel:
-      title: ResponseLabel
-      type: string
-      description: The full textual label for the response, as selected by a respondent.
-      example: Very Favorable
-    QuestionID:
-      title: Question ID
-      description: The unique identifier for a question.
-      type: string
-      format: uuid
-      example: a7ee637c-e5d1-4cf8-b484-8eb372f22941
-    Question:
-      title: Question
-      description: The representation of a survey question and its relevant metadata.
-      type: object
-      example:
-        id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
-        label: Avon Usage Frequency
-        text: How often do you use or purchase something from the following? --- Avon
-        country:
-          code: fr
-          label: France
-        category:
-          id: brand
-          label: Brand
-        responses:
-        - id: '1'
-          label: Several times a day
-        - id: '2'
-          label: About once a day
-        - id: '3'
-          label: A few times a week
-        - id: '4'
-          label: About once a week
-        - id: '5'
-          label: About once a month or less often
-        - id: '6'
-          label: I do not have an account or do not use
-        entity:
-          id: avon
-          label: Avon
-      properties:
-        id:
-          $ref: '#/components/schemas/QuestionID'
-        label:
-          type: string
-          description: A short label describing the question.
-        text:
-          type: string
-          description: The full text of the question, as shown to respondents. For questions that we do not ask directly, such as certain demographic questions, this field will be omitted.
-        country:
-          $ref: '#/components/schemas/Country'
-        category:
-          $ref: '#/components/schemas/Category'
-        responses:
-          $ref: '#/components/schemas/Responses'
-        entity:
-          $ref: '#/components/schemas/Entity'
-    Country:
-      title: Country
-      type: object
-      properties:
-        code:
-          $ref: '#/components/schemas/CountryCode'
-        label:
-          type: string
-          description: The full name for the country.
-      example:
-        code: us
-        label: United States
-      description: A country.
-    ScoreID:
-      title: Score ID
-      description: The unique identifier for a score.
-      type: string
-      format: uuid
-      example: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
-    Category:
-      title: Category
-      type: object
-      description: A type of question.
-      properties:
-        id:
-          type: string
-          description: The ID of the category, which can be used for filtering questions and entities.
-        label:
-          type: string
-          description: The descriptive label for the category.
-      example:
-        id: brand
-        label: Brand
-    DataSourceID:
-      title: Data Source ID
-      description: The unique identifier for a data source.
-      type: string
-      format: uuid
-      example: 00de2081-e013-411d-823c-cd483283e38d
     EntityType:
       title: EntityType
       description: A entity type, such as brand or favorability.
@@ -960,26 +442,81 @@ components:
       example:
         id: favorability
         label: Favorability
-    PaginationToken:
+    ScoreID:
+      title: Score ID
+      description: The unique identifier for a score.
       type: string
-      format: base64
-      description: A pagination token to use to get paginated results. For more details, see the section on [Pagination](#pagination).
-      pattern: ^(?:[A-Za-z\d+/]{4})*(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?$
-      minLength: 3
-      maxLength: 300
-      example: eyJxdWVyeSI6ImRvZ3MifQ==
-    Response:
-      title: response
+      format: uuid
+      example: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
+    Entity:
+      title: Entity
       type: object
-      description: A single response option for a question.
-      example:
-        id: '1'
-        label: Several times a day
+      description: A particular subject to which a question may refer, such as a specific brand or politician.
       properties:
         id:
-          $ref: '#/components/schemas/ResponseID'
+          type: string
+          description: The ID of the entity, which can be used for filtering questions.
         label:
-          $ref: '#/components/schemas/ResponseLabel'
+          type: string
+          description: The descriptive label of the entity, usually the name.
+      example:
+        id: autotrader
+        label: Autotrader
+    CountryCode:
+      title: CountryCode
+      description: Two letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code. This can be used in the `country_code` query parameter of multiple endpoints to limit results to the specific country.
+      type: string
+      example: us
+      pattern: ^[a-z]+
+      minLength: 2
+      maxLength: 2
+    DataSourceID:
+      title: Data Source ID
+      description: The unique identifier for a data source.
+      type: string
+      format: uuid
+      example: 00de2081-e013-411d-823c-cd483283e38d
+    Responses:
+      type: array
+      description: The response IDs and labels for the question.
+      items:
+        $ref: '#/components/schemas/Response'
+    Error:
+      type: object
+      description: Error message.
+      additionalProperties: false
+      example:
+        code: 500
+        status: Internal Server Error
+        errors:
+        - Oops, something went wrong
+      properties:
+        code:
+          type: integer
+          description: Numeric HTTP status code.
+          example: 500
+          format: int32
+          minimum: 100
+          maximum: 599
+        status:
+          type: string
+          description: Text description of HTTP status code.
+          example: Internal Server Error
+        errors:
+          type: array
+          description: Messages describing errors.
+          items:
+            title: error
+            type: string
+            description: A specific error message.
+          example:
+          - Oops, something went wrong
+    QuestionID:
+      title: Question ID
+      description: The unique identifier for a question.
+      type: string
+      format: uuid
+      example: a7ee637c-e5d1-4cf8-b484-8eb372f22941
     GetScoresBulkStatusOutput:
       type: object
       properties:
@@ -1006,19 +543,63 @@ components:
           format: date-time
           description: Expiration time of the download URL. Only present when status is `complete`.
           example: '2025-01-01T12:00:00Z'
-    CountryCode:
-      title: CountryCode
-      description: Two letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code. This can be used in the `country_code` query parameter of multiple endpoints to limit results to the specific country.
-      type: string
-      example: us
-      pattern: ^[a-z]+
-      minLength: 2
-      maxLength: 2
-    Responses:
-      type: array
-      description: The response IDs and labels for the question.
-      items:
-        $ref: '#/components/schemas/Response'
+    Response:
+      title: response
+      type: object
+      description: A single response option for a question.
+      example:
+        id: '1'
+        label: Several times a day
+      properties:
+        id:
+          $ref: '#/components/schemas/ResponseID'
+        label:
+          $ref: '#/components/schemas/ResponseLabel'
+    Category:
+      title: Category
+      type: object
+      description: A type of question.
+      properties:
+        id:
+          type: string
+          description: The ID of the category, which can be used for filtering questions and entities.
+        label:
+          type: string
+          description: The descriptive label for the category.
+      example:
+        id: brand
+        label: Brand
+    Score:
+      title: Score
+      description: The representation of a score and its relevant metadata. If entity type is present, then an entity that satisfies the entity type must be passed into [/surveys/syndicated/scores](#POST-postSurveysSyndicatedScores). If `components` is present, at least one component ID must be supplied in `component_ids` when running the score.
+      type: object
+      example:
+        id: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
+        label: Avon Favorability
+      properties:
+        id:
+          $ref: '#/components/schemas/ScoreID'
+        label:
+          type: string
+          description: A short label describing the score.
+        description:
+          type: string
+          description: A description of the score.
+        entity_type:
+          $ref: '#/components/schemas/EntityType'
+        components:
+          type: array
+          description: The components available for this score. Scores such as "Price Surprise" and "Unavailability" expose components that restrict the calculation to a subset of categories (for example "home_appliances"). If this field is present, at least one component ID must be provided in `component_ids` when running the score.
+          items:
+            type: object
+            description: A component available for this score.
+            properties:
+              id:
+                type: string
+                description: The unique identifier for the component.
+                example: home_appliances
+            required:
+            - id
     DataSourceQuestion:
       title: Data Source Question
       description: A question across accessible data sources.
@@ -1074,108 +655,6 @@ components:
           $ref: '#/components/schemas/Responses'
         entity:
           $ref: '#/components/schemas/Entity'
-    DataSource:
-      title: Data Source
-      type: object
-      description: A data source and the countries it supports.
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: The unique identifier for the data source.
-          example: 00de2081-e013-411d-823c-cd483283e38d
-        name:
-          type: string
-          description: The human-readable name of the data source.
-          example: Daily Tracker
-        countries:
-          type: array
-          description: The countries the score is available in for this data source.
-          items:
-            $ref: '#/components/schemas/Country'
-    ResponseID:
-      title: ResponseID
-      type: string
-      pattern: ^[0-9]+$
-      minLength: 0
-      maxLength: 100
-      description: Unique identifier for a question response. Response IDs are only unique within a question, and not across them.
-      example: '1'
-    Error:
-      type: object
-      description: Error message.
-      additionalProperties: false
-      example:
-        code: 500
-        status: Internal Server Error
-        errors:
-        - Oops, something went wrong
-      properties:
-        code:
-          type: integer
-          description: Numeric HTTP status code.
-          example: 500
-          format: int32
-          minimum: 100
-          maximum: 599
-        status:
-          type: string
-          description: Text description of HTTP status code.
-          example: Internal Server Error
-        errors:
-          type: array
-          description: Messages describing errors.
-          items:
-            title: error
-            type: string
-            description: A specific error message.
-          example:
-          - Oops, something went wrong
-    Entity:
-      title: Entity
-      type: object
-      description: A particular subject to which a question may refer, such as a specific brand or politician.
-      properties:
-        id:
-          type: string
-          description: The ID of the entity, which can be used for filtering questions.
-        label:
-          type: string
-          description: The descriptive label of the entity, usually the name.
-      example:
-        id: autotrader
-        label: Autotrader
-    Score:
-      title: Score
-      description: The representation of a score and its relevant metadata. If entity type is present, then an entity that satisfies the entity type must be passed into [/surveys/syndicated/scores](#POST-postSurveysSyndicatedScores). If `components` is present, at least one component ID must be supplied in `component_ids` when running the score.
-      type: object
-      example:
-        id: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
-        label: Avon Favorability
-      properties:
-        id:
-          $ref: '#/components/schemas/ScoreID'
-        label:
-          type: string
-          description: A short label describing the score.
-        description:
-          type: string
-          description: A description of the score.
-        entity_type:
-          $ref: '#/components/schemas/EntityType'
-        components:
-          type: array
-          description: The components available for this score. Scores such as "Price Surprise" and "Unavailability" expose components that restrict the calculation to a subset of categories (for example "home_appliances"). If this field is present, at least one component ID must be provided in `component_ids` when running the score.
-          items:
-            type: object
-            description: A component available for this score.
-            properties:
-              id:
-                type: string
-                description: The unique identifier for the component.
-                example: home_appliances
-            required:
-            - id
     GetResponsesBulkStatusOutput:
       type: object
       properties:
@@ -1202,13 +681,171 @@ components:
           format: date-time
           description: Expiration time of the download URL. Only present when status is `complete`.
           example: '2025-01-01T12:00:00Z'
+    ResponseID:
+      title: ResponseID
+      type: string
+      pattern: ^[0-9]+$
+      minLength: 0
+      maxLength: 100
+      description: Unique identifier for a question response. Response IDs are only unique within a question, and not across them.
+      example: '1'
+    Country:
+      title: Country
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/CountryCode'
+        label:
+          type: string
+          description: The full name for the country.
+      example:
+        code: us
+        label: United States
+      description: A country.
+    DataSource:
+      title: Data Source
+      type: object
+      description: A data source and the countries it supports.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the data source.
+          example: 00de2081-e013-411d-823c-cd483283e38d
+        name:
+          type: string
+          description: The human-readable name of the data source.
+          example: Daily Tracker
+        countries:
+          type: array
+          description: The countries the score is available in for this data source.
+          items:
+            $ref: '#/components/schemas/Country'
+    ResponseLabel:
+      title: ResponseLabel
+      type: string
+      description: The full textual label for the response, as selected by a respondent.
+      example: Very Favorable
+    Question:
+      title: Question
+      description: The representation of a survey question and its relevant metadata.
+      type: object
+      example:
+        id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
+        label: Avon Usage Frequency
+        text: How often do you use or purchase something from the following? --- Avon
+        country:
+          code: fr
+          label: France
+        category:
+          id: brand
+          label: Brand
+        responses:
+        - id: '1'
+          label: Several times a day
+        - id: '2'
+          label: About once a day
+        - id: '3'
+          label: A few times a week
+        - id: '4'
+          label: About once a week
+        - id: '5'
+          label: About once a month or less often
+        - id: '6'
+          label: I do not have an account or do not use
+        entity:
+          id: avon
+          label: Avon
+      properties:
+        id:
+          $ref: '#/components/schemas/QuestionID'
+        label:
+          type: string
+          description: A short label describing the question.
+        text:
+          type: string
+          description: The full text of the question, as shown to respondents. For questions that we do not ask directly, such as certain demographic questions, this field will be omitted.
+        country:
+          $ref: '#/components/schemas/Country'
+        category:
+          $ref: '#/components/schemas/Category'
+        responses:
+          $ref: '#/components/schemas/Responses'
+        entity:
+          $ref: '#/components/schemas/Entity'
+    PaginationToken:
+      type: string
+      format: base64
+      description: A pagination token to use to get paginated results. For more details, see the section on [Pagination](#pagination).
+      pattern: ^(?:[A-Za-z\d+/]{4})*(?:[A-Za-z\d+/]{3}=|[A-Za-z\d+/]{2}==)?$
+      minLength: 3
+      maxLength: 300
+      example: eyJxdWVyeSI6ImRvZ3MifQ==
+  headers:
+    X-Rate-Limit-Reset:
+      description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
+      schema:
+        type: integer
+        example: 1633538752414
+    X-Rate-Limit-Limit:
+      description: The rate limit ceiling that is applicable for the current request.
+      schema:
+        type: integer
+        example: 200
+    X-Rate-Limit-Remaining:
+      description: The number of remaining requests in the current rate limit period.
+      schema:
+        type: integer
+        example: 179
   examples:
+    Question:
+      description: Question
+      value:
+        id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
+        label: Avon Usage Frequency
+        text: How often do you use or purchase something from the following? --- Avon
+        country:
+          code: fr
+          label: France
+        category:
+          id: brand
+          label: Brand
+        responses:
+        - id: '1'
+          label: Several times a day
+        - id: '2'
+          label: About once a day
+        - id: '3'
+          label: A few times a week
+        - id: '4'
+          label: About once a week
+        - id: '5'
+          label: About once a month or less often
+        - id: '6'
+          label: I do not have an account or do not use
+        entity:
+          id: avon
+          label: Avon
+    GetResponsesBulkStatusOutputComplete:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status: complete
+        download_url: https://example.com/report.parquet
+        expires_at: '2025-01-01T12:00:00Z'
+    GetResponsesBulkStatusOutputProcessing:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status: processing
     GetScoresBulkStatusOutputComplete:
       value:
         request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
         status: complete
         download_url: https://example.com/report.parquet
         expires_at: '2025-01-01T12:00:00Z'
+    GetScoresBulkStatusOutputProcessing:
+      value:
+        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
+        status: processing
     Questions:
       description: Questions
       value:
@@ -1239,10 +876,6 @@ components:
           entity:
             id: avon
             label: Avon
-    GetScoresBulkStatusOutputProcessing:
-      value:
-        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
-        status: processing
     DataSourceQuestions:
       description: Questions
       value:
@@ -1274,16 +907,6 @@ components:
           entity:
             id: avon
             label: Avon
-    GetResponsesBulkStatusOutputProcessing:
-      value:
-        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
-        status: processing
-    GetResponsesBulkStatusOutputComplete:
-      value:
-        request_id: b1a2c3d4-e5f6-7890-abcd-ef1234567890
-        status: complete
-        download_url: https://example.com/report.parquet
-        expires_at: '2025-01-01T12:00:00Z'
     DataSourceQuestion:
       description: Question
       value:
@@ -1313,35 +936,14 @@ components:
         entity:
           id: avon
           label: Avon
-    Question:
-      description: Question
-      value:
-        id: cbaad021-12b7-5cd2-9a0f-3ed556946d0d
-        label: Avon Usage Frequency
-        text: How often do you use or purchase something from the following? --- Avon
-        country:
-          code: fr
-          label: France
-        category:
-          id: brand
-          label: Brand
-        responses:
-        - id: '1'
-          label: Several times a day
-        - id: '2'
-          label: About once a day
-        - id: '3'
-          label: A few times a week
-        - id: '4'
-          label: About once a week
-        - id: '5'
-          label: About once a month or less often
-        - id: '6'
-          label: I do not have an account or do not use
-        entity:
-          id: avon
-          label: Avon
   parameters:
+    data_source_id:
+      name: data_source_id
+      in: path
+      required: true
+      description: The data source UUID to retrieve questions for.
+      schema:
+        $ref: '#/components/schemas/DataSourceID'
     entity_id:
       name: entity_id
       in: query
@@ -1355,15 +957,66 @@ components:
         pattern: ^[A-Za-z0-9_]+
         minLength: 1
         maxLength: 100
-    path_country_code:
+    query:
+      name: query
+      in: query
+      required: false
+      description: Terms to search. This parameter supports partial matching, normalization, and other common search features.
+      schema:
+        type: string
+        example: Morning Consult
+        minLength: 3
+        maxLength: 100
+    data_source_id_query:
+      name: data_source_id
+      in: query
+      required: false
+      description: A data source UUID to filter results. When omitted, results include records across every data source you have access to.
+      schema:
+        type: string
+        format: uuid
+        example: 00de2081-e013-411d-823c-cd483283e38d
+    pagination_token:
+      name: pagination_token
+      in: query
+      required: false
+      description: 'Pagination token returned from previous calls to an endpoint. When provided, no other query parameters can be specified.
+
+        For more details, please see the [Pagination](#pagination) section.'
+      schema:
+        $ref: '#/components/schemas/PaginationToken'
+    country_code:
       name: country_code
-      in: path
+      in: query
       required: true
-      description: 'The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code to retrieve questions for.
+      description: 'The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code used to filter results.
 
         The available countries can be retrieved from the [/surveys/syndicated/countries](#GET-getSurveysSyndicatedCountries) endpoint.'
       schema:
         $ref: '#/components/schemas/CountryCode'
+    page_size:
+      name: page_size
+      in: query
+      required: false
+      description: The number of results to return per request. Additional results past the page size can be retrieved using a pagination token, if one is returned in the response.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        format: int32
+        default: 50
+        example: 50
+    entity_type_id:
+      name: entity_type_id
+      in: query
+      required: false
+      description: An entity type ID to filter results.
+      schema:
+        type: string
+        example: favorability
+        pattern: ^[A-Za-z0-9_]+
+        minLength: 1
+        maxLength: 100
     category_id:
       name: category_id
       in: query
@@ -1377,89 +1030,436 @@ components:
         minLength: 1
         maxLength: 100
         example: brand
-    pagination_token:
-      name: pagination_token
-      in: query
-      required: false
-      description: 'Pagination token returned from previous calls to an endpoint. When provided, no other query parameters can be specified.
-
-        For more details, please see the [Pagination](#pagination) section.'
-      schema:
-        $ref: '#/components/schemas/PaginationToken'
-    data_source_id_query:
-      name: data_source_id
-      in: query
-      required: false
-      description: A data source UUID to filter results. When omitted, results include records across every data source you have access to.
-      schema:
-        type: string
-        format: uuid
-        example: 00de2081-e013-411d-823c-cd483283e38d
-    data_source_id:
-      name: data_source_id
+    path_country_code:
+      name: country_code
       in: path
       required: true
-      description: The data source UUID to retrieve questions for.
-      schema:
-        $ref: '#/components/schemas/DataSourceID'
-    entity_type_id:
-      name: entity_type_id
-      in: query
-      required: false
-      description: An entity type ID to filter results.
-      schema:
-        type: string
-        example: favorability
-        pattern: ^[A-Za-z0-9_]+
-        minLength: 1
-        maxLength: 100
-    page_size:
-      name: page_size
-      in: query
-      required: false
-      description: The number of results to return per request. Additional results past the page size can be retrieved using a pagination token, if one is returned in the response.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        format: int32
-        default: 50
-        example: 50
-    query:
-      name: query
-      in: query
-      required: false
-      description: Terms to search. This parameter supports partial matching, normalization, and other common search features.
-      schema:
-        type: string
-        example: Morning Consult
-        minLength: 3
-        maxLength: 100
-    country_code:
-      name: country_code
-      in: query
-      required: true
-      description: 'The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code used to filter results.
+      description: 'The two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code to retrieve questions for.
 
         The available countries can be retrieved from the [/surveys/syndicated/countries](#GET-getSurveysSyndicatedCountries) endpoint.'
       schema:
         $ref: '#/components/schemas/CountryCode'
-  headers:
-    X-Rate-Limit-Limit:
-      description: The rate limit ceiling that is applicable for the current request.
-      schema:
-        type: integer
-        example: 200
-    X-Rate-Limit-Reset:
-      description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
-      schema:
-        type: integer
-        example: 1633538752414
-    X-Rate-Limit-Remaining:
-      description: The number of remaining requests in the current rate limit period.
-      schema:
-        type: integer
-        example: 179
+  responses:
+    GetScoresBulkStatusOutput:
+      description: Bulk Scores Request Status
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetScoresBulkStatusOutput'
+          examples:
+            Processing:
+              $ref: '#/components/examples/GetScoresBulkStatusOutputProcessing'
+            Complete:
+              $ref: '#/components/examples/GetScoresBulkStatusOutputComplete'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetQuestionByIDOutput:
+      description: Single Question
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Question'
+          examples:
+            question:
+              $ref: '#/components/examples/Question'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    NotFoundError:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            NotFound:
+              description: Not Found
+              value:
+                code: 404
+                status: Not Found
+                errors:
+                - Not Found
+    BadRequestError:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            BadRequest:
+              description: Multiple Errors
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                - 'invalid value "uuu" for field "country_code": must be 2 characters'
+                - 'invalid value "not base64" for field "pagination_token": must be valid base64'
+            PageSize:
+              description: Invalid Page Size
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                - 'invalid value "1000" for field "page_size": must be maximum 100'
+    GetQuestionsOutput:
+      description: Questions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+              questions:
+                type: array
+                description: A list of questions with data available.
+                items:
+                  $ref: '#/components/schemas/Question'
+          examples:
+            questions:
+              $ref: '#/components/examples/Questions'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetDataSourceQuestionOutput:
+      description: Single Question
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DataSourceQuestion'
+          examples:
+            question:
+              $ref: '#/components/examples/DataSourceQuestion'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetResponsesBulkStatusOutput:
+      description: Bulk Responses Request Status
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetResponsesBulkStatusOutput'
+          examples:
+            Processing:
+              $ref: '#/components/examples/GetResponsesBulkStatusOutputProcessing'
+            Complete:
+              $ref: '#/components/examples/GetResponsesBulkStatusOutputComplete'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InternalServerError:
+              description: Internal Server Error
+              value:
+                code: 500
+                status: Internal Server Error
+                errors:
+                - a server error occurred
+    GetDataSourcesOutput:
+      description: Data Sources
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - data_sources
+            properties:
+              data_sources:
+                type: array
+                description: The data sources the caller has access to.
+                items:
+                  $ref: '#/components/schemas/DataSource'
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+          examples:
+            Example:
+              description: Data Sources
+              value:
+                data_sources:
+                - id: 00de2081-e013-411d-823c-cd483283e38d
+                  name: Daily Tracker
+                  countries:
+                  - code: us
+                    label: United States
+                  - code: de
+                    label: Germany
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetScoreDataSourcesOutput:
+      description: Score Data Sources
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data_sources:
+                type: array
+                description: The data sources the score is available in, along with the countries the score can be calculated in for each data source.
+                items:
+                  $ref: '#/components/schemas/DataSource'
+          examples:
+            Example:
+              description: Score Data Sources
+              value:
+                data_sources:
+                - id: 00de2081-e013-411d-823c-cd483283e38d
+                  name: Daily Tracker
+                  countries:
+                  - code: us
+                    label: United States
+                  - code: de
+                    label: Germany
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    InvalidQuestionIDError:
+      description: Invalid Question ID
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InvalidQuestionID:
+              description: Invalid Question ID
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                - Invalid question id
+    GetScoreCountriesOutput:
+      description: Score Countries
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              countries:
+                type: array
+                description: A list of scores for syndicated surveys.
+                items:
+                  $ref: '#/components/schemas/Country'
+          examples:
+            Example:
+              description: Score
+              value:
+                countries:
+                - code: us
+                  label: United Stated
+                - code: de
+                  label: Germany
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetScoresOutput:
+      description: Scores
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              scores:
+                type: array
+                description: A list of countries the score is valid in.
+                items:
+                  $ref: '#/components/schemas/Score'
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+          examples:
+            Example:
+              description: Score
+              value:
+                scores:
+                - id: 7fa7d4a5-8b79-462c-b9ae-03a0431cb5e5
+                  label: Net Promoter Score
+                  description: Net Promoter Score is the NPS Promoters score minus the NPS Detractors score.
+                  entity_type:
+                    id: brand
+                    label: Brand
+                - id: 48ef9961-1dc8-42d1-b03c-c480681bc732
+                  label: Index of Consumer Sentiment (ICS)
+                  description: The Index of Consumer Sentiment (ICS) is a composite score that measures consumer confidence based on economic outlook questions.
+                pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetEntitiesOutput:
+      description: Entities
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              entities:
+                type: array
+                description: A list of entities tracked in our syndicated surveys.
+                items:
+                  $ref: '#/components/schemas/Entity'
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+          examples:
+            Example:
+              description: Entities
+              value:
+                entities:
+                - id: autotrader
+                  label: Autotrader
+                - id: A000148
+                  label: Jake Auchincloss
+                pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetCountriesOutput:
+      description: Countries
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties: false
+            properties:
+              countries:
+                type: array
+                description: A list of countries with questions available.
+                uniqueItems: true
+                minItems: 0
+                items:
+                  $ref: '#/components/schemas/Country'
+          examples:
+            Example:
+              description: Countries
+              value:
+                countries:
+                - code: us
+                  label: United States
+                - code: de
+                  label: Germany
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetDataSourceQuestionsOutput:
+      description: Questions
+      content:
+        application/json:
+          schema:
+            type: object
+            description: A paginated list of questions across accessible data sources.
+            required:
+            - questions
+            properties:
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+              questions:
+                type: array
+                description: A list of questions with data available.
+                items:
+                  $ref: '#/components/schemas/DataSourceQuestion'
+          examples:
+            questions:
+              $ref: '#/components/examples/DataSourceQuestions'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    GetCategoriesOutput:
+      description: Categories
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              categories:
+                type: array
+                description: An array of question categories.
+                items:
+                  $ref: '#/components/schemas/Category'
+              pagination_token:
+                $ref: '#/components/schemas/PaginationToken'
+          examples:
+            Example:
+              description: Categories
+              value:
+                categories:
+                - id: brand
+                  label: Brand
+                - id: demographic
+                  label: Demographic
+                pagination_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            Forbidden:
+              description: Forbidden
+              value:
+                code: 403
+                status: Forbidden
+                errors:
+                - missing necessary claims
   securitySchemes:
     Basic:
       type: http

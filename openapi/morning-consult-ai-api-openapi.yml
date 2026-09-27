@@ -49,20 +49,6 @@ paths:
                 $ref: '#/components/examples/PostAIResolveInput'
 components:
   schemas:
-    PostAIResolveInput:
-      type: object
-      additionalProperties: false
-      properties:
-        text:
-          title: Text
-          type: string
-          description: Query text.
-          minLength: 1
-          maxLength: 1000
-          pattern: ^[^\0]+$
-          example: What do women think of Cheerios?
-      required:
-      - text
     Error:
       type: object
       description: Error message.
@@ -93,6 +79,20 @@ components:
             description: A specific error message.
           example:
           - Oops, something went wrong
+    PostAIResolveInput:
+      type: object
+      additionalProperties: false
+      properties:
+        text:
+          title: Text
+          type: string
+          description: Query text.
+          minLength: 1
+          maxLength: 1000
+          pattern: ^[^\0]+$
+          example: What do women think of Cheerios?
+      required:
+      - text
   responses:
     PostAIResolveOutput:
       description: The response for resolving a query to a summary.
@@ -155,21 +155,21 @@ components:
                 errors:
                 - a server error occurred
   headers:
-    X-Rate-Limit-Remaining:
-      description: The number of remaining requests in the current rate limit period.
-      schema:
-        type: integer
-        example: 179
-    X-Rate-Limit-Limit:
-      description: The rate limit ceiling that is applicable for the current request.
-      schema:
-        type: integer
-        example: 200
     X-Rate-Limit-Reset:
       description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
       schema:
         type: integer
         example: 1633538752414
+    X-Rate-Limit-Limit:
+      description: The rate limit ceiling that is applicable for the current request.
+      schema:
+        type: integer
+        example: 200
+    X-Rate-Limit-Remaining:
+      description: The number of remaining requests in the current rate limit period.
+      schema:
+        type: integer
+        example: 179
   examples:
     PostAIResolveInput:
       value:

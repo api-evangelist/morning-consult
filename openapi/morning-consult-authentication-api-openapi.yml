@@ -37,100 +37,15 @@ paths:
       tags:
       - Authentication
 components:
-  responses:
-    PostAuthTokenOutput:
-      description: Auth Tokens
-      content:
-        application/json:
-          examples:
-            tokens:
-              $ref: '#/components/examples/Tokens'
-          schema:
-            $ref: '#/components/schemas/Tokens'
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
-    InvalidCredentialsError:
-      description: Invalid Credentials
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            InvalidCredentials:
-              description: Invalid Credentials
-              value:
-                code: 400
-                status: Bad Request
-                errors:
-                - invalid credentials
-            InvalidRefreshToken:
-              description: Invalid Refresh Token
-              value:
-                code: 400
-                status: Bad Request
-                errors:
-                - invalid or expired refresh token
-    InternalServerError:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            InternalServerError:
-              description: Internal Server Error
-              value:
-                code: 500
-                status: Internal Server Error
-                errors:
-                - a server error occurred
-  headers:
-    X-Rate-Limit-Remaining:
-      description: The number of remaining requests in the current rate limit period.
-      schema:
-        type: integer
-        example: 179
-    X-Rate-Limit-Limit:
-      description: The rate limit ceiling that is applicable for the current request.
-      schema:
-        type: integer
-        example: 200
-    X-Rate-Limit-Reset:
-      description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
-      schema:
-        type: integer
-        example: 1633538752414
-  schemas:
+  examples:
     Tokens:
-      type: object
-      example:
+      description: Auth Tokens
+      value:
         token_type: Bearer
         expires_in: 3600
         id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
         refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
-      properties:
-        token_type:
-          type: string
-          description: The type of token received. Will be Bearer.
-          example: Bearer
-          default: Bearer
-        expires_in:
-          type: integer
-          description: The number of seconds until the token expires.
-          example: 3600
-          default: 3600
-          readOnly: true
-        refresh_token:
-          type: string
-          description: The refresh token to be used to retrieve a new JWT.
-        id_token:
-          type: string
-          description: The JWT token. Use this in the Authorization header in requests to other endpoints.
+  schemas:
     Error:
       type: object
       description: Error message.
@@ -161,14 +76,99 @@ components:
             description: A specific error message.
           example:
           - Oops, something went wrong
-  examples:
     Tokens:
-      description: Auth Tokens
-      value:
+      type: object
+      example:
         token_type: Bearer
         expires_in: 3600
         id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
         refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      properties:
+        token_type:
+          type: string
+          description: The type of token received. Will be Bearer.
+          example: Bearer
+          default: Bearer
+        expires_in:
+          type: integer
+          description: The number of seconds until the token expires.
+          example: 3600
+          default: 3600
+          readOnly: true
+        refresh_token:
+          type: string
+          description: The refresh token to be used to retrieve a new JWT.
+        id_token:
+          type: string
+          description: The JWT token. Use this in the Authorization header in requests to other endpoints.
+  responses:
+    InvalidCredentialsError:
+      description: Invalid Credentials
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InvalidCredentials:
+              description: Invalid Credentials
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                - invalid credentials
+            InvalidRefreshToken:
+              description: Invalid Refresh Token
+              value:
+                code: 400
+                status: Bad Request
+                errors:
+                - invalid or expired refresh token
+    PostAuthTokenOutput:
+      description: Auth Tokens
+      content:
+        application/json:
+          examples:
+            tokens:
+              $ref: '#/components/examples/Tokens'
+          schema:
+            $ref: '#/components/schemas/Tokens'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            InternalServerError:
+              description: Internal Server Error
+              value:
+                code: 500
+                status: Internal Server Error
+                errors:
+                - a server error occurred
+  headers:
+    X-Rate-Limit-Reset:
+      description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
+      schema:
+        type: integer
+        example: 1633538752414
+    X-Rate-Limit-Limit:
+      description: The rate limit ceiling that is applicable for the current request.
+      schema:
+        type: integer
+        example: 200
+    X-Rate-Limit-Remaining:
+      description: The number of remaining requests in the current rate limit period.
+      schema:
+        type: integer
+        example: 179
   securitySchemes:
     Basic:
       type: http
