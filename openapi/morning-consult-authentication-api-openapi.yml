@@ -37,63 +37,12 @@ paths:
       tags:
       - Authentication
 components:
-  schemas:
-    Tokens:
-      type: object
-      example:
-        token_type: Bearer
-        expires_in: 3600
-        id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
-        refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
-      properties:
-        token_type:
-          type: string
-          description: The type of token received. Will be Bearer.
-          example: Bearer
-          default: Bearer
-        expires_in:
-          type: integer
-          description: The number of seconds until the token expires.
-          example: 3600
-          default: 3600
-          readOnly: true
-        refresh_token:
-          type: string
-          description: The refresh token to be used to retrieve a new JWT.
-        id_token:
-          type: string
-          description: The JWT token. Use this in the Authorization header in requests to other endpoints.
-    Error:
-      type: object
-      description: Error message.
-      additionalProperties: false
-      example:
-        code: 500
-        status: Internal Server Error
-        errors:
-        - Oops, something went wrong
-      properties:
-        code:
-          type: integer
-          description: Numeric HTTP status code.
-          example: 500
-          format: int32
-          minimum: 100
-          maximum: 599
-        status:
-          type: string
-          description: Text description of HTTP status code.
-          example: Internal Server Error
-        errors:
-          type: array
-          description: Messages describing errors.
-          items:
-            title: error
-            type: string
-            description: A specific error message.
-          example:
-          - Oops, something went wrong
   headers:
+    X-Rate-Limit-Remaining:
+      description: The number of remaining requests in the current rate limit period.
+      schema:
+        type: integer
+        example: 179
     X-Rate-Limit-Reset:
       description: The time at which the rate limit resets, specified in UTC epoch time (in milliseconds).
       schema:
@@ -104,12 +53,23 @@ components:
       schema:
         type: integer
         example: 200
-    X-Rate-Limit-Remaining:
-      description: The number of remaining requests in the current rate limit period.
-      schema:
-        type: integer
-        example: 179
   responses:
+    PostAuthTokenOutput:
+      description: Auth Tokens
+      content:
+        application/json:
+          examples:
+            tokens:
+              $ref: '#/components/examples/Tokens'
+          schema:
+            $ref: '#/components/schemas/Tokens'
+      headers:
+        X-Rate-Limit-Limit:
+          $ref: '#/components/headers/X-Rate-Limit-Limit'
+        X-Rate-Limit-Remaining:
+          $ref: '#/components/headers/X-Rate-Limit-Remaining'
+        X-Rate-Limit-Reset:
+          $ref: '#/components/headers/X-Rate-Limit-Reset'
     InvalidCredentialsError:
       description: Invalid Credentials
       content:
@@ -145,22 +105,62 @@ components:
                 status: Internal Server Error
                 errors:
                 - a server error occurred
-    PostAuthTokenOutput:
-      description: Auth Tokens
-      content:
-        application/json:
-          examples:
-            tokens:
-              $ref: '#/components/examples/Tokens'
-          schema:
-            $ref: '#/components/schemas/Tokens'
-      headers:
-        X-Rate-Limit-Limit:
-          $ref: '#/components/headers/X-Rate-Limit-Limit'
-        X-Rate-Limit-Remaining:
-          $ref: '#/components/headers/X-Rate-Limit-Remaining'
-        X-Rate-Limit-Reset:
-          $ref: '#/components/headers/X-Rate-Limit-Reset'
+  schemas:
+    Error:
+      type: object
+      description: Error message.
+      additionalProperties: false
+      example:
+        code: 500
+        status: Internal Server Error
+        errors:
+        - Oops, something went wrong
+      properties:
+        code:
+          type: integer
+          description: Numeric HTTP status code.
+          example: 500
+          format: int32
+          minimum: 100
+          maximum: 599
+        status:
+          type: string
+          description: Text description of HTTP status code.
+          example: Internal Server Error
+        errors:
+          type: array
+          description: Messages describing errors.
+          items:
+            title: error
+            type: string
+            description: A specific error message.
+          example:
+          - Oops, something went wrong
+    Tokens:
+      type: object
+      example:
+        token_type: Bearer
+        expires_in: 3600
+        id_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxM
+        refresh_token: eyJxdWVyeSI6ImRvZ3MifQ==
+      properties:
+        token_type:
+          type: string
+          description: The type of token received. Will be Bearer.
+          example: Bearer
+          default: Bearer
+        expires_in:
+          type: integer
+          description: The number of seconds until the token expires.
+          example: 3600
+          default: 3600
+          readOnly: true
+        refresh_token:
+          type: string
+          description: The refresh token to be used to retrieve a new JWT.
+        id_token:
+          type: string
+          description: The JWT token. Use this in the Authorization header in requests to other endpoints.
   examples:
     Tokens:
       description: Auth Tokens
