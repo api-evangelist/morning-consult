@@ -167,6 +167,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/morning-consult-capability-edges.yml
+  name: Morning Consult Business Capability Map
 - type: Overlay
   url: overlays/morning-consult-api-overlay.yaml
 - type: X-MCPServerCandidate

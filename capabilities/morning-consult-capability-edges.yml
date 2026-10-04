@@ -1,0 +1,27 @@
+slug: morning-consult
+provider: Morning Consult
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 1
+edges:
+- tag: Data
+  spec_file: morning-consult-data-api-openapi.yml
+  capability_id: BC-400.30
+  capability_id_l1: BC-400
+  capability_name: Market Intelligence Management
+  confidence: 0.8
+  evidence: postSurveysSyndicatedTimeseries  Get Syndicated Survey Timeseries Data; postResponses  Get
+    Aggregated Question Responses Data
+  reason: Operations deliver syndicated survey timeseries, brand/reputation scores and aggregated question
+    responses — i.e. consumer and market research data consumed for insight. That is Market Intelligence
+    Management (market research, customer insights). Some ambiguity only about whether it is better framed
+    as analytics delivery.
