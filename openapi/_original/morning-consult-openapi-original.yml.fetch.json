@@ -1,0 +1,12 @@
+{
+ "url": "https://api.morningconsult.com/openapi.yaml",
+ "requested_url": "https://api.morningconsult.com/openapi.yaml",
+ "status": 200,
+ "content_type": "text/plain; charset=utf-8",
+ "bytes": 100337,
+ "sha256": "853f558e8c849407839d7723c9435519a9051f7e59d75e9736df037754594f21",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 1.0), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
