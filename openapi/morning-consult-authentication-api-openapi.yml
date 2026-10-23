@@ -185,3 +185,9 @@ components:
       description: Refresh Token bearer header authentication for renewing tokens.
 x-dd-extra-monitors:
 - "{\n  \"name\": \"Henosis: MCP internal service errors on env:{{environment}}\",\n  \"type\": \"trace-analytics alert\",\n  \"query\": \"trace-analytics(\\\"service:henosis env:{{environment}} operation_name:http.request @span.kind:server @mcp.internal_error:true\\\").index(\\\"trace-search\\\", \\\"djm-search\\\").rollup(\\\"count\\\").last(\\\"5m\\\") > 0\",\n  \"message\": \"Henosis MCP returned internal service errors in the last 5 minutes.\\n@pagerduty-henosis-mcp\",\n  \"tags\": [\n    \"henosis\",\n    \"mcp\"\n  ],\n  \"options\": {\n    \"thresholds\": {\n      \"critical\": 0\n    },\n    \"notify_no_data\": false,\n    \"include_tags\": true\n  },\n  \"priority\": 3\n}\n"
+x-provenance:
+  method: harvested
+  publisher: Morning Consult
+  source: https://api.morningconsult.com/openapi.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
